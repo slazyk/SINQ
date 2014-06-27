@@ -34,7 +34,7 @@ Most of the operations themselves are performed *lazily*, i.e. not performed unl
 
 It uses `SinqSequence<T>` wrapper struct in order to do that, you can wrap any `Sequence` by simply `sinq(seq)`, `from(seq)`, or `SinqSequence(seq)`. This wrapper is introduced because Swift does not allow for adding methods to protocols (like `Sequence`) and because extending existing `SequenceOf<T>` causes linker errors.
 
-*While I do try to follow cocoa-like naming and spelling conventions, while also keeping the LINQ naming where reasonable, i refuse to call the struct `SINQSequence<T>` or `SSequence<T>`.*
+*While I do try to follow cocoa-like naming and spelling conventions, while also keeping the LINQ naming where reasonable, I refuse to call the struct `SINQSequence<T>` or `SSequence<T>`.*
 
 ## Installation
 
@@ -52,8 +52,8 @@ While the library compiles just fine and each one of the samples/tests  from `SI
 
 | Method | Example | Variants / Aliases |
 |--------|---------|--------------------|
-| `all` | `if seq. all{ $0 > 0 }` | `all(_ predicate:)` |
-| `any` | `if seq. any{ $0 > 0 }` | `any()` `any(_ predicate:)` |
+| `all` | `if seq.all{ $0 > 0 }` | `all(_ predicate:)` |
+| `any` | `if seq.any{ $0 > 0 }` | `any()` `any(_ predicate:)` |
 | `concat` | `let seq3 = seq1.concat(seq2)` | `concat(_ sequence:)` |
 | `contains` | `if seq1.contains(x, equality: { $0 == $1 })` | `contains(_ value: equality:)` |
 | `count` | `let num = seq.count()` | `count()` |
