@@ -1,12 +1,16 @@
 # SINQ - Swift Integrated Native Query
 
-Swift has generic Collections and Sequences as well as some universal free functions to work with them. What is missing is a fluent interface for chaining subsequent operations that would make working with them easy - like LINQ for .NET. 
+Swift has generic Collections and Sequences as well as some universal free functions to work with them. What is missing is a fluent interface for chaining subsequent operations that would make working with them easy - like list comprehensions in many languages or LINQ in .NET. 
 
 ## Overview
 
 SINQ (or LINQ for Swift) is a Swift library for working with sequences / collections. It is, as name suggests, modelled after LINQ, but it is not necessarily intended to be a LINQ port. The library is still under development, just as Swift is. Any contributions, both in terms of suggestions/ideas or actual code are welcome.
 
-The main goal of SINQ is to provide a fluent interface for working with collections. The way it tries to accomplish that is with chaining of methods. Examples:
+SINQ is brought to you by Leszek Ślażyński (slazyk), you can follow me on [twitter](https://twitter.com/slazyk) and [github](https://github.com/slazyk). Be sure to check out [Observable-Swift](https://github.com/slazyk/Observable-Swift) my other library that implements value observing and events. 
+
+## Examples
+
+The main goal of SINQ is to provide a *fluent* interface for working with collections. The way it tries to accomplish that is with chaining of methods. Everything is typed - **no typecasts required**. Examples:
 
 ```swift
 from([1, 4, 2, 3, 5]).whereTrue{ $0 > 2 }.orderBy{ $0 }.select{ 2 * $0 }
@@ -71,9 +75,4 @@ While the library compiles just fine and each one of the samples/tests  from `SI
 | `toArray` | `let a = seq.toArray()` | `toArray()` | `toDictionary` | `let d = seq.toDictionary{ $0.key }` | `toDictionary(_ key: value?:)` `toDictionary(_ keyValue:)` |
 | `union` | `let all = seq1.union(seq2, equality: {$0 == $1 })` | `union(_ sequence: equality:)` |
 | `whereTrue` `filter` | `let seq2 = seq.whereTrue{ $0 > 10 }` | `whereTrue(_ predicate:)` `filter(_ predicate:)` |
-
-## Author
-
-SINQ is brought to you by Leszek Ślażyński (slazyk), you can follow me on [twitter](https://twitter.com/slazyk) and [github](https://github.com/slazyk). 
-
 
