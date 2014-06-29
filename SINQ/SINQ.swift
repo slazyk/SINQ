@@ -107,7 +107,7 @@ struct SinqSequence<T>: Sequence {
         }
     }
     
-//    func distinct<T: Equatable>() -> SequenceOf<T> {
+//    func distinct<T: Equatable>() -> SinqSequence<T> {
 //        return distinct({ $0 == $1 })
 //    }
     
@@ -121,7 +121,7 @@ struct SinqSequence<T>: Sequence {
             let sinqSequence: SinqSequence<T> = sinq(sequence)
             return GeneratorOf {
                 while let e = g.next() {
-                    if (!sinqSequence.contains(e, equality)) {
+                    if !sinqSequence.contains(e, equality) {
                         return e
                     }
                 }
@@ -132,7 +132,7 @@ struct SinqSequence<T>: Sequence {
     
 //    func except
 //        <S: Sequence, T: Equatable where T == S.GeneratorType.Element>
-//        (sequence: S) -> SequenceOf<T>
+//        (sequence: S) -> SinqSequence<T>
 //    {
 //        return self.except(sequence, equality: { $0 == $1 })
 //    }
@@ -157,8 +157,7 @@ struct SinqSequence<T>: Sequence {
         return self.firstOrNil(predicate)!
     }
     
-    func firstOrNil(predicate: T -> Bool) -> T?
-    {
+    func firstOrNil(predicate: T -> Bool) -> T? {
         var g = self.generate()
         while let e = g.next() {
             if predicate(e) {
@@ -282,7 +281,7 @@ struct SinqSequence<T>: Sequence {
             let sinqSequence : SinqSequence<T> = sinq(sequence)
             return GeneratorOf {
                 while let e = g.next() {
-                    if (sinqSequence.contains(e, equality)) {
+                    if sinqSequence.contains(e, equality) {
                         return e
                     }
                 }
@@ -560,7 +559,7 @@ struct SinqSequence<T>: Sequence {
     }
     
     func toDictionary
-        <K: protocol<Equatable, Hashable>, V>
+        <K: Hashable, V>
         (keyValue: T -> (K, V)) -> Dictionary<K, V>
     {
         var dict = Dictionary<K, V>()
@@ -572,7 +571,7 @@ struct SinqSequence<T>: Sequence {
     }
     
     func toDictionary
-        <K: protocol<Equatable, Hashable>, V>
+        <K: Hashable, V>
         (key: T -> K, value: T -> V) -> Dictionary<K, V>
     {
         var dict = Dictionary<K, V>()
@@ -583,7 +582,7 @@ struct SinqSequence<T>: Sequence {
     }
 
     func toDictionary
-        <K: protocol<Equatable, Hashable>>
+        <K: Hashable>
         (key: T -> K) -> Dictionary<K, T>
     {
         var dict = Dictionary<K, T>()
