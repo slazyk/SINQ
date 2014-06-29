@@ -59,13 +59,14 @@ While the library compiles just fine and each one of the samples/tests  from `SI
 | `all` | `if seq.all{ $0 > 0 }` | `all(_ predicate:)` |
 | `any` | `if seq.any{ $0 > 0 }` | `any()` `any(_ predicate:)` |
 | `concat` | `let seq3 = seq1.concat(seq2)` | `concat(_ sequence:)` |
-| `contains` | `if seq1.contains(x, equality: { $0 == $1 })` | `contains(_ value: equality:)` |
+| `contains` | `if seq1.contains(x){$0}` | `contains(_ value: equality:)` `contains(_ value: key:)` |
 | `count` | `let num = seq.count()` | `count()` |
-| `distinct` | `let seq2 = seq.distinct{ $0 == $1 }` | `distinct(_ equality:)` |
-| `except` | `let seq3 = seq1.except(seq2, equality: { $0 == $1 })` | `except(_ sequence: equality:)` |
+| `distinct` | `let seq2 = seq.distinct{$0.id}` | `distinct(_ equality:)` `distinct(_ key:)` |
+| `except` | `let seq3 = seq1.except(seq2){$0}` | `except(_ sequence: equality:)` `except(_ sequence: key:)` |
 | `first` `last` | `let e = seq.firstOrNil{ $0 > 10 }` | `first(_ predicate?:)` `firstOrNil(_ predicate?:)` `firstOrDefault(_: predicate?:)` `last...` |
 | `groupBy` | `seq.groupBy{ $0.key }.select{ ... }` |  `groupBy(_ key: element?: result?:)` |
 | `groupJoin` | `seq1.groupJoin(inner: seq2, outerKey: { $0.id }, innerKey: { $0.refId })`  | `groupJoin(inner: outerKey: innerKey: result?:)` |
+| `intersect` | `let seq3 = seq1.intersect(seq2){$0.id}` | `intersect(_ sequence: equality:)` `intersect(_ sequence: key:)` |
 | `iterate` `reduce` | `seq.iterate(0) { $0 + $1 }` | `iterate(_ initial: combine:)` `reduce(_ initial: combine:)` |
 | `orderBy` `orderByDescending` | `seq.orderBy{ $0.value }` | `orderBy(_ key:)` `orderByDescending(_ key:)` |
 | `reverse` | `seq.reverse()` | `reverse()` |
@@ -73,6 +74,6 @@ While the library compiles just fine and each one of the samples/tests  from `SI
 | `selectMany` | `from(x).select{ $0.values }` | `selectMany(_: T -> Vs, result?:)` `selectMany(_: (T, Int) -> Vs, result?:)` |
 | `skip` `take` | `seq.skipWhile{ $0 < 10 }` | `skip(_ count:)` `skipWhile(_ predicate:)` `take...` |
 | `toArray` | `let a = seq.toArray()` | `toArray()` | `toDictionary` | `let d = seq.toDictionary{ $0.key }` | `toDictionary(_ key: value?:)` `toDictionary(_ keyValue:)` |
-| `union` | `let all = seq1.union(seq2, equality: {$0 == $1 })` | `union(_ sequence: equality:)` |
+| `union` | `let all = seq1.union(seq2){$0 == $1}` | `union(_ sequence: equality:)` `union(_ sequence: key:)` |
 | `whereTrue` `filter` | `let seq2 = seq.whereTrue{ $0 > 10 }` | `whereTrue(_ predicate:)` `filter(_ predicate:)` |
 

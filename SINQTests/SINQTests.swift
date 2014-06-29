@@ -30,12 +30,14 @@ class SINQTests: XCTestCase {
     }
     
     func testContains() {
-        let sequence = sinq([1,2,3,4,5,6])
+        let sequence = sinq(1...6)
         for i in 1...6 {
-            XCTAssertTrue(sequence.contains(i, { $0 == $1 }))
+            XCTAssertTrue(sequence.contains(i){$0 == $1})
+            XCTAssertTrue(sequence.contains(i){$0})
         }
         for i in 7...10 {
-            XCTAssertFalse(sequence.contains(i, { $0 == $1 }))
+            XCTAssertFalse(sequence.contains(i){$0 == $1})
+            XCTAssertFalse(sequence.contains(i){$0})
         }
     }
 
@@ -44,13 +46,17 @@ class SINQTests: XCTestCase {
     }
 
     func testDistinct() {
-        XCTAssertEqual(sinq(0..10).distinct{ $0 == $1 }.count(), 10)
-        XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{ $0 == $1 }.count(), 1)
+        XCTAssertEqual(sinq(0..10).distinct{$0 == $1}.count(), 10)
+        XCTAssertEqual(sinq(0..10).distinct{$0}.count(), 10)
+        XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{$0 == $1}.count(), 1)
+        XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{$0}.count(), 1)
     }
-   
+    
     func testExcept() {
         XCTAssertEqual(sinq(0..10).except(4..6){$0 == $1}.count(), 8)
+        XCTAssertEqual(sinq(0..10).except(4..6){$0}.count(), 8)
         XCTAssertEqual(sinq([1, 1, 2]).except([2]){$0 == $1}.count(), 1)
+        XCTAssertEqual(sinq([1, 1, 2]).except([2]){$0}.count(), 1)
     }
     
     func testFirst() {
@@ -84,6 +90,7 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(sinq(1...10).intersect(0...20){ $0 == $1 }.count(), 10)
         XCTAssertEqual(sinq(10...20).intersect(4...6){ $0 == $1 }.count(), 0)
         XCTAssertEqual(sinq([1, 1, 1]).intersect([1, 1]){ $0 == $1 }.count(), 1)
+        XCTAssertEqual(sinq([1, 1, 1]).intersect([1, 1]){$0}.count(), 1)
     }
     
     func testJoin() {
@@ -196,10 +203,16 @@ class SINQTests: XCTestCase {
     }
 
     func testUnion() {
-        let res = sinq([1, 2, 1, 2]).union([3, 3, 2, 1], { $0 == $1 })
+        let res1 = sinq([1, 2, 1, 2]).union([3, 3, 2, 1]){$0 == $1}
+        let res2 = sinq([1, 2, 1, 2]).union([3, 3, 2, 1]){$0}
+        XCTAssertEqual(res1.count(), 3)
+        XCTAssertEqual(res2.count(), 3)
         var counter = 1
-        XCTAssertEqual(res.count(), 3)
-        for elem in res {
+        for elem in res1 {
+            XCTAssertEqual(elem, counter++)
+        }
+        counter = 1
+        for elem in res2 {
             XCTAssertEqual(elem, counter++)
         }
     }

@@ -76,6 +76,10 @@ struct SinqSequence<T>: Sequence {
         }
         return false
     }
+
+    func contains<K: Equatable>(value: T, key: T -> K) -> Bool {
+        return self.contains(value){key($0)==key($1)}
+    }
     
 //    func contains<T: Equatable> (value: T) -> Bool {
 //        return self.contains(value, equality: { $0 == $1 })
@@ -107,6 +111,21 @@ struct SinqSequence<T>: Sequence {
         }
     }
     
+    func distinct<K: Hashable>(key: T -> K) -> SinqSequence<T> {
+        return SinqSequence { () -> GeneratorOf<T> in
+            var uniq = Dictionary<K, Bool>()
+            var g = self.generate()
+            return GeneratorOf {
+                while let e = g.next() {
+                    if !uniq.updateValue(true, forKey: key(e)) {
+                        return e
+                    }
+                }
+                return nil
+            }
+        }
+    }
+    
 //    func distinct<T: Equatable>() -> SinqSequence<T> {
 //        return distinct({ $0 == $1 })
 //    }
@@ -122,6 +141,24 @@ struct SinqSequence<T>: Sequence {
             return GeneratorOf {
                 while let e = g.next() {
                     if !sinqSequence.contains(e, equality) {
+                        return e
+                    }
+                }
+                return nil
+            }
+        }
+    }
+    
+    func except
+        <S: Sequence, K: Hashable where T == S.GeneratorType.Element>
+        (sequence: S, key: T -> K) -> SinqSequence<T>
+    {
+        return SinqSequence { () -> GeneratorOf<T> in
+            var g = self.generate()
+            var uniq = sinq(sequence).toDictionary{(key($0), true)}
+            return GeneratorOf {
+                while let e = g.next() {
+                    if !uniq.updateValue(true, forKey: key(e)) {
                         return e
                     }
                 }
@@ -282,6 +319,24 @@ struct SinqSequence<T>: Sequence {
             return GeneratorOf {
                 while let e = g.next() {
                     if sinqSequence.contains(e, equality) {
+                        return e
+                    }
+                }
+                return nil
+            }
+        }
+    }
+    
+    func intersect
+        <S: Sequence, K: Hashable where S.GeneratorType.Element == T>
+        (sequence: S, key: T -> K) -> SinqSequence<T>
+    {
+        return SinqSequence { () -> GeneratorOf<T> in
+            var g = self.generate()
+            var uniq = sinq(sequence).toDictionary{(key($0), true)}
+            return GeneratorOf {
+                while let e = g.next() {
+                    if uniq.removeValueForKey(key(e)) {
                         return e
                     }
                 }
@@ -600,6 +655,13 @@ struct SinqSequence<T>: Sequence {
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
         return self.distinct(equality).concat(sinq(sequence).distinct(equality).except(self, equality))
+    }
+    
+    func union
+        <S: Sequence, K: Hashable where S.GeneratorType.Element == T>
+        (sequence: S, key: T -> K) -> SinqSequence<T>
+    {
+        return self.distinct(key).concat(sinq(sequence).distinct(key).except(self, key))
     }
 
     func zip<S: Sequence, R>(sequence: S, result: (T, S.GeneratorType.Element) -> R) -> SinqSequence<R> {
