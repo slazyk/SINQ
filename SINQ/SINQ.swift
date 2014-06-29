@@ -117,7 +117,7 @@ struct SinqSequence<T>: Sequence {
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
         return SinqSequence { () -> GeneratorOf<T> in
-            var g = self.generate()
+            var g = self.distinct(equality).generate()
             let sinqSequence: SinqSequence<T> = sinq(sequence)
             return GeneratorOf {
                 while let e = g.next() {
@@ -277,7 +277,7 @@ struct SinqSequence<T>: Sequence {
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
         return SinqSequence { () -> GeneratorOf<T> in
-            var g = self.generate()
+            var g = self.distinct(equality).generate()
             let sinqSequence : SinqSequence<T> = sinq(sequence)
             return GeneratorOf {
                 while let e = g.next() {
@@ -599,7 +599,7 @@ struct SinqSequence<T>: Sequence {
         <S: Sequence where S.GeneratorType.Element == T>
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
-        return self.distinct(equality).concat(sinq(sequence).except(self, equality))
+        return self.distinct(equality).concat(sinq(sequence).distinct(equality).except(self, equality))
     }
 
     func zip<S: Sequence, R>(sequence: S, result: (T, S.GeneratorType.Element) -> R) -> SinqSequence<R> {

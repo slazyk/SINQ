@@ -49,7 +49,8 @@ class SINQTests: XCTestCase {
     }
    
     func testExcept() {
-        XCTAssertEqual(sinq(0..10).except(4..6, { $0 == $1 }).count(), 8)
+        XCTAssertEqual(sinq(0..10).except(4..6){$0 == $1}.count(), 8)
+        XCTAssertEqual(sinq([1, 1, 2]).except([2]){$0 == $1}.count(), 1)
     }
     
     func testFirst() {
@@ -79,9 +80,10 @@ class SINQTests: XCTestCase {
     }
     
     func testIntersect() {
-        XCTAssertEqual(sinq(1...10).intersect(4...6, { $0 == $1 }).count(), 3)
-        XCTAssertEqual(sinq(1...10).intersect(0...20, { $0 == $1 }).count(), 10)
-        XCTAssertEqual(sinq(10...20).intersect(4...6, { $0 == $1 }).count(), 0)
+        XCTAssertEqual(sinq(1...10).intersect(4...6){ $0 == $1 }.count(), 3)
+        XCTAssertEqual(sinq(1...10).intersect(0...20){ $0 == $1 }.count(), 10)
+        XCTAssertEqual(sinq(10...20).intersect(4...6){ $0 == $1 }.count(), 0)
+        XCTAssertEqual(sinq([1, 1, 1]).intersect([1, 1]){ $0 == $1 }.count(), 1)
     }
     
     func testJoin() {
@@ -194,7 +196,7 @@ class SINQTests: XCTestCase {
     }
 
     func testUnion() {
-        let res = sinq([1, 2, 1, 2]).union([3, 2, 1], { $0 == $1 })
+        let res = sinq([1, 2, 1, 2]).union([3, 3, 2, 1], { $0 == $1 })
         var counter = 1
         XCTAssertEqual(res.count(), 3)
         for elem in res {
