@@ -1,6 +1,6 @@
 # SINQ - Swift Integrated Native Query
 
-Swift has generic Collections and Sequences as well as some universal free functions to work with them. What is missing is a fluent interface for chaining subsequent operations that would make working with them easy - like list comprehensions in many languages or LINQ in .NET. 
+Swift has generic Collections and Sequences as well as some universal free functions to work with them. What is missing is a fluent interface that would make working with them easy - like list comprehensions in many languages or LINQ in .NET. The operations should: require **no typecasts**, be **easily chained**, work on **any sequences**, be **performed lazily** where possible.
 
 ## Overview
 
@@ -10,7 +10,7 @@ SINQ is brought to you by Leszek Ślażyński (slazyk), you can follow me on [tw
 
 ## Examples
 
-The main goal of SINQ is to provide a *fluent* interface for working with collections. The way it tries to accomplish that is with chaining of methods. Everything is typed - **no typecasts required**. Examples:
+The main goal of SINQ is to provide a *fluent* interface for working with collections. The way it tries to accomplish that is with **chaining of methods**. Most of the operations are **performed lazily**, i.e. computations are deferred and done only for the part of the result you enumerate. Everything is typed - **no typecasts required**. Examples:
 
 ```swift
 from([1, 4, 2, 3, 5]).whereTrue{ $0 > 2 }.orderBy{ $0 }.select{ 2 * $0 }
@@ -34,9 +34,9 @@ sinq(categories).join(inner: products,
 
 ```
 
-Most of the operations themselves are performed *lazily*, i.e. not performed unless you actually enumerate the result. Please note that the results are not cached, i.e. looping twice over result of `orderBy(...)` will perform two sorts. If you want to use results multiple times, you can get always array with `toArray()`.
+Please note that the results are not cached, i.e. looping twice over result of `orderBy(...)` will perform two sorts. If you want to use results multiple times, you can get always array with `toArray()`.
 
-It uses `SinqSequence<T>` wrapper struct in order to do that, you can wrap any `Sequence` by simply `sinq(seq)`, `from(seq)`, or `SinqSequence(seq)`. This wrapper is introduced because Swift does not allow for adding methods to protocols (like `Sequence`) and because extending existing `SequenceOf<T>` causes linker errors.
+It uses `SinqSequence<T>` wrapper struct in order to do that, **you can wrap any `Sequence`** by simply `sinq(seq)`, `from(seq)`, or `SinqSequence(seq)`. This wrapper is introduced because Swift does not allow for adding methods to protocols (like `Sequence`) and because extending existing `SequenceOf<T>` causes linker errors.
 
 *While I do try to follow cocoa-like naming and spelling conventions, while also keeping the LINQ naming where reasonable, I refuse to call the struct `SINQSequence<T>` or `SSequence<T>`.*
 
