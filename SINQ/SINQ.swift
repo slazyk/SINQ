@@ -28,6 +28,35 @@ struct SinqSequence<T>: Sequence {
         _seq = SequenceOf(self_)
     }
     
+    func aggregate(combine: (T, T) -> T) -> T {
+        return reduce(combine)
+    }
+    
+    func aggregate<R>(initial: R, combine: (R, T) -> R) -> R {
+        return reduce(initial, combine: combine)
+    }
+
+    func aggregate<C, R>(initial: C, combine: (C, T) -> C, result: C -> R) -> R {
+        return reduce(initial, combine: combine, result: result)
+    }
+    
+    func reduce(combine: (T, T) -> T) -> T {
+        var g = self.generate()
+        var r = g.next()!
+        while let e = g.next() {
+            r = combine(r, e)
+        }
+        return r
+    }
+    
+    func reduce<R>(initial: R, combine: (R, T) -> R) -> R {
+        return Swift.reduce(_seq, initial, combine)
+    }
+
+    func reduce<C, R>(initial: C, combine: (C, T) -> C, result: C -> R) -> R {
+        return result(Swift.reduce(_seq, initial, combine))
+    }
+    
     func all(predicate: T -> Bool) -> Bool {
         for elem in self {
             if !predicate(elem) {
@@ -439,14 +468,6 @@ struct SinqSequence<T>: Sequence {
         case .Some(let e): return e
         case .None: return defaultElement
         }
-    }
-    
-    func iterate<R>(initial: R, combine: (T, R) -> R) -> R {
-        return Swift.reduce(self, initial, { combine($1, $0) })
-    }
-    
-    func reduce<R>(initial: R, combine: (R, T) -> R) -> R {
-        return Swift.reduce(self, initial, { combine($0, $1) })
     }
     
     // TODO: max, min
