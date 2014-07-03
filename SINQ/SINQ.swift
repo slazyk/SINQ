@@ -107,7 +107,7 @@ struct SinqSequence<T>: Sequence {
     }
 
     func contains<K: Equatable>(value: T, key: T -> K) -> Bool {
-        return self.contains(value){key($0)==key($1)}
+        return self.contains(value, equality: { key($0)==key($1) })
     }
     
 //    func contains<T: Equatable> (value: T) -> Bool {
@@ -130,7 +130,7 @@ struct SinqSequence<T>: Sequence {
             var g = self.generate()
             return GeneratorOf {
                 while let e = g.next() {
-                    if !sinq(uniq).contains(e, equality) {
+                    if !sinq(uniq).contains(e, equality: equality) {
                         uniq += e
                         return e
                     }
@@ -191,7 +191,7 @@ struct SinqSequence<T>: Sequence {
             let sinqSequence: SinqSequence<T> = sinq(sequence)
             return GeneratorOf {
                 while let e = g.next() {
-                    if !sinqSequence.contains(e, equality) {
+                    if !sinqSequence.contains(e, equality: equality) {
                         return e
                     }
                 }
@@ -369,7 +369,7 @@ struct SinqSequence<T>: Sequence {
             let sinqSequence : SinqSequence<T> = sinq(sequence)
             return GeneratorOf {
                 while let e = g.next() {
-                    if sinqSequence.contains(e, equality) {
+                    if sinqSequence.contains(e, equality: equality) {
                         return e
                     }
                 }
@@ -541,7 +541,6 @@ struct SinqSequence<T>: Sequence {
         return select(selector)
     }
 
-
     func selectMany<S: Sequence, R>(selector: (T, Int) -> S, result: S.GeneratorType.Element -> R) -> SinqSequence<R> {
         return SinqSequence<R> { () -> GeneratorOf<R> in
             typealias C = S.GeneratorType.Element
@@ -571,11 +570,11 @@ struct SinqSequence<T>: Sequence {
     }
 
     func selectMany<S: Sequence>(selector: (T, Int) -> S) -> SinqSequence<S.GeneratorType.Element> {
-        return selectMany(selector, { $0 })
+        return selectMany(selector, result: { $0 })
     }
     
     func selectMany<S: Sequence>(selector: T -> S) -> SinqSequence<S.GeneratorType.Element> {
-        return selectMany({ (x, _) in selector(x) }, { $0 })
+        return selectMany({ (x, _) in selector(x) }, result: { $0 })
     }
     
     // TODO: single
@@ -697,14 +696,14 @@ struct SinqSequence<T>: Sequence {
         <S: Sequence where S.GeneratorType.Element == T>
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
-        return self.distinct(equality).concat(sinq(sequence).distinct(equality).except(self, equality))
+        return self.distinct(equality).concat(sinq(sequence).distinct(equality).except(self, equality: equality))
     }
     
     func union
         <S: Sequence, K: Hashable where S.GeneratorType.Element == T>
         (sequence: S, key: T -> K) -> SinqSequence<T>
     {
-        return self.distinct(key).concat(sinq(sequence).distinct(key).except(self, key))
+        return self.distinct(key).concat(sinq(sequence).distinct(key).except(self, key: key))
     }
 
     func zip<S: Sequence, R>(sequence: S, result: (T, S.GeneratorType.Element) -> R) -> SinqSequence<R> {
