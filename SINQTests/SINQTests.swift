@@ -122,6 +122,15 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(sinq([42, 1, 2, 3]).lastOrDefault(10), 3)
     }
 
+    func testOrderAndFilter() {
+        let sorted = sinq(0..100).orderBy{$0}.filter{$0 < 10}
+        var counter = 0
+        for elem in sorted {
+            XCTAssertEqual(elem, counter++)
+        }
+        XCTAssertEqual(counter, 10)
+    }
+    
     func testOrderBy() {
         let sorted = sinq([1,3,4,2,5,6,9,8,7,0]).orderBy{ $0 }
         var counter = 0
@@ -198,6 +207,26 @@ class SINQTests: XCTestCase {
         var counter = 0
         for elem in res {
             XCTAssertEqual(elem, counter++)
+        }
+    }
+    
+    func testThenBy() {
+        let sorted = sinq([(0, 1), (1, 1), (2, 0), (1, 0), (3, 1), (2, 1), (0, 0), (3, 0) ]).orderBy{$0.0}.thenBy{$0.1}
+        var counter = 0
+        for elem in sorted {
+            XCTAssertEqual(elem.0, counter/2)
+            XCTAssertEqual(elem.1, counter%2)
+            counter += 1
+        }
+    }
+
+    func testThenByDescending() {
+        let sorted = sinq([(0, 1), (1, 1), (2, 0), (1, 0), (3, 1), (2, 1), (0, 0), (3, 0) ]).orderBy{$0.0}.thenByDescending{$0.1}
+        var counter = 0
+        for elem in sorted {
+            XCTAssertEqual(elem.0, counter/2)
+            XCTAssertEqual(elem.1, 1-counter%2)
+            counter += 1
         }
     }
     

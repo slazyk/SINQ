@@ -12,8 +12,8 @@
 // this does compile but does not link (e.g. groupBy)
 //extension SequenceOf {
 
-// and you cannot inherit from structs, therefore we use composition
-struct SinqSequence<T>: Sequence {
+// but we want to be inherited from anyways, hence class and composition
+class SinqSequence<T>: Sequence {
 
     let _seq : SequenceOf<T>
 
@@ -494,20 +494,14 @@ struct SinqSequence<T>: Sequence {
     
     // TODO: max, min
     
-    func orderBy<K: Comparable>(key: T -> K) -> SinqSequence<T> {
-        return SinqSequence { () -> IndexingGenerator<T[]> in
-            var array = self.toArray()
-            sort(array, { key($0) < key($1) })
-            return array.generate()
-        }
+    func orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        let comparator = { key($0) < key($1) }
+        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
     }
     
-    func orderByDescending<K: Comparable>(key: T -> K) -> SinqSequence<T> {
-        return SinqSequence { () -> IndexingGenerator<T[]> in
-            var array = self.toArray()
-            sort(array, { key($0) > key($1) })
-            return array.generate()
-        }
+    func orderByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        let comparator = { key($0) > key($1) }
+        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
     }
 
     func reverse() -> SinqSequence<T> {
@@ -649,8 +643,15 @@ struct SinqSequence<T>: Sequence {
         }
     }
     
-    // TODO: thenBy, thenByDescending (OrderedSinqSequence)
     
+    func thenBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        return orderBy(key)
+    }
+    
+    func thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        return orderByDescending(key)
+    }
+
     func toArray() -> T[] {
         return T[](self)
     }
@@ -727,6 +728,60 @@ struct SinqSequence<T>: Sequence {
         return whereTrue(predicate)
     }
 
+    
+}
+
+class SinqOrderedSequence<T> : SinqSequence<T>, Sequence {
+    
+    override func generate() -> GeneratorType {
+        let sorted = sort(sinq(_seq).toArray()) {
+            (a: T, b: T) in
+            for comparator in self.comparators {
+                if comparator(a, b) {
+                    return true
+                }
+                if comparator(b, a) {
+                    return false
+                }
+            }
+            return false
+        }
+        return GeneratorOf(sorted.generate())
+    }
+
+    init<S: Sequence where S.GeneratorType.Element == T>(source: S, comparators: Array<(T, T) -> Bool>) {
+        self.comparators = comparators
+        super.init(source)
+    }
+    
+    let comparators : Array<(T, T) -> Bool>
+    
+    override func orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        let comparator = { key($0) < key($1) }
+        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
+    }
+    
+    override func orderByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        let comparator = { key($0) > key($1) }
+        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
+    }
+
+    override func thenBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        var newComparators = comparators
+        newComparators += { key($0) < key($1) }
+        return SinqOrderedSequence(source: _seq, comparators: newComparators)
+    }
+    
+    override func thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+        var newComparators = comparators
+        newComparators += { key($0) > key($1) }
+        return SinqOrderedSequence(source: _seq, comparators: newComparators)
+    }
+    
+    // override to filter before sorting...
+    override func whereTrue(predicate: T -> Bool) -> SinqSequence<T> {
+        return SinqOrderedSequence(source: sinq(_seq).whereTrue(predicate), comparators: comparators)
+    }
     
 }
 
