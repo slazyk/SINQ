@@ -121,7 +121,19 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(sinq(Array<Int>()).lastOrDefault(10), 10)
         XCTAssertEqual(sinq([42, 1, 2, 3]).lastOrDefault(10), 3)
     }
+  
+    func testMax() {
+        let cities = [("Warsaw", 1717), ("Geneve", 184), ("Amsterdam", 779), ("Zurich", 366)]
+        XCTAssertEqual(sinq(cities).max{$0.1}, 1717)
+        XCTAssertEqual(sinq(cities).argmax{$0.1}.0, "Warsaw")
+    }
 
+    func testMin() {
+        let cities = [("Warsaw", 1717), ("Geneve", 184), ("Amsterdam", 779), ("Zurich", 366)]
+        XCTAssertEqual(sinq(cities).min{$0.1}, 184)
+        XCTAssertEqual(sinq(cities).argmin{$0.1}.0, "Geneve")
+    }
+    
     func testOrderAndFilter() {
         let sorted = sinq(0..100).orderBy{$0}.filter{$0 < 10}
         var counter = 0

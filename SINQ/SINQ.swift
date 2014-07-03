@@ -492,7 +492,55 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    // TODO: max, min
+    func max<R: Comparable>(key: T -> R) -> R {
+        var gen = self.generate()
+        var ret = key(gen.next()!)
+        while let elem = gen.next().map(key) {
+            if elem > ret {
+                ret = elem
+            }
+        }
+        return ret
+    }
+    
+    func min<R: Comparable>(key: T -> R) -> R {
+        var gen = self.generate()
+        var ret = key(gen.next()!)
+        while let elem = gen.next().map(key) {
+            if elem < ret {
+                ret = elem
+            }
+        }
+        return ret
+    }
+    
+    func argmax<R: Comparable>(key: T -> R) -> T {
+        var gen = self.generate()
+        var ret = gen.next()!
+        var res = key(ret)
+        while let arg = gen.next() {
+            let elem = key(arg)
+            if elem > res {
+                res = elem
+                ret = arg
+            }
+        }
+        return ret
+    }
+    
+    func argmin<R: Comparable>(key: T -> R) -> T {
+        var gen = self.generate()
+        var ret = gen.next()!
+        var res = key(ret)
+        while let arg = gen.next() {
+            let elem = key(arg)
+            if elem < res {
+                res = elem
+                ret = arg
+            }
+        }
+        return ret
+    }
     
     func orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         let comparator = { key($0) < key($1) }
