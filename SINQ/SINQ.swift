@@ -159,6 +159,28 @@ struct SinqSequence<T>: Sequence {
 //        return distinct({ $0 == $1 })
 //    }
     
+    func elementAtOrNil(index: Int) -> T? {
+        if (index < 0) {
+            return nil
+        }
+        var g = self.generate()
+        for _ in 0..index {
+            g.next()
+        }
+        return g.next()
+    }
+    
+    func elementAt(index: Int) -> T {
+        return elementAtOrNil(index)!
+    }
+    
+    func elementAt(index: Int, orDefault def: T) -> T {
+        switch elementAtOrNil(index) {
+        case .Some(let e): return e
+        case .None: return def
+        }
+    }
+    
     // O(N*M) :(
     func except
         <S: Sequence where T == S.GeneratorType.Element>

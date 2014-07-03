@@ -52,6 +52,13 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{$0}.count(), 1)
     }
     
+    func testElementAt() {
+        XCTAssertEqual(sinq(0..10).elementAt(2), 2)
+        // XXX: does not compile without typecast, why?
+        XCTAssertNil(sinq(0..10).elementAtOrNil(20) as Int?)
+        XCTAssertEqual(sinq(0..10).elementAt(21, orDefault: 42), 42)
+    }
+    
     func testExcept() {
         XCTAssertEqual(sinq(0..10).except(4..6){$0 == $1}.count(), 8)
         XCTAssertEqual(sinq(0..10).except(4..6){$0}.count(), 8)
