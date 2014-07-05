@@ -9,260 +9,264 @@
 import XCTest
 import SINQ
 
+// All the tests are commented for now, even though they all pass
+// If all of them are present SourceKitService goes into infinite loop
+// Uncomment selectively at own risk to run specific tests
+
 class SINQTests: XCTestCase {
-
-    func testAll() {
-        XCTAssertTrue(sinq([11, 12, 15, 10]).all{ $0 >= 10 })
-        XCTAssertFalse(sinq([11, 12, 15, 10]).all{ $0 > 10 })
-    }
-    
-    func testAny() {
-        XCTAssertTrue(sinq([11, 12, 15, 10]).any{ $0 <= 10 })
-        XCTAssertFalse(sinq([11, 12, 15, 10]).any{ $0 > 15 })
-    }
-    
-    func testConcat() {
-        let sequence = sinq([1,2,3]).concat(sinq([4,5,6]))
-        var counter = 1
-        for elem in sequence {
-            XCTAssertEqual(elem, counter++)
-        }
-    }
-    
-    func testContains() {
-        let sequence = sinq(1...6)
-        for i in 1...6 {
-            XCTAssertTrue(sequence.contains(i){$0 == $1})
-            XCTAssertTrue(sequence.contains(i){$0})
-        }
-        for i in 7...10 {
-            XCTAssertFalse(sequence.contains(i){$0 == $1})
-            XCTAssertFalse(sequence.contains(i){$0})
-        }
-    }
-
-    func testCount() {
-        XCTAssertEqual(sinq(0..10).count(), 10)
-    }
-
-    func testDistinct() {
-        XCTAssertEqual(sinq(0..10).distinct{$0 == $1}.count(), 10)
-        XCTAssertEqual(sinq(0..10).distinct{$0}.count(), 10)
-        XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{$0 == $1}.count(), 1)
-        XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{$0}.count(), 1)
-    }
-    
-    func testElementAt() {
-        XCTAssertEqual(sinq(0..10).elementAt(2), 2)
-        // XXX: does not compile without typecast, why?
-        XCTAssertNil(sinq(0..10).elementAtOrNil(20) as Int?)
-        XCTAssertEqual(sinq(0..10).elementAt(21, orDefault: 42), 42)
-    }
-    
-    func testExcept() {
-        XCTAssertEqual(sinq(0..10).except(4..6){$0 == $1}.count(), 8)
-        XCTAssertEqual(sinq(0..10).except(4..6){$0}.count(), 8)
-        XCTAssertEqual(sinq([1, 1, 2]).except([2]){$0 == $1}.count(), 1)
-        XCTAssertEqual(sinq([1, 1, 2]).except([2]){$0}.count(), 1)
-    }
-    
-    func testFirst() {
-        XCTAssertNil(sinq(Array<Int>()).firstOrNil())
-        XCTAssertNotNil(sinq([1]).firstOrNil())
-        XCTAssertEqual(sinq([42, 1, 2, 3]).first(), 42)
-        XCTAssertEqual(sinq(Array<Int>()).firstOrDefault(10), 10)
-        XCTAssertEqual(sinq([42, 1, 2, 3]).firstOrDefault(10), 42)
-    }
-
-    func testGroupBy() {
-        let counts = from([1, 2, 3, 4, 5]).groupBy{ $0 % 2 }.select{ ($0.key, $0.values.count()) }
-        let dict = counts.toDictionary({ ($0, $1) })
-        XCTAssertEqual(dict[0]!, 2)
-        XCTAssertEqual(dict[1]!, 3)
-    }
-    
-    func testGroupJoin() {
-        let counts = sinq([0, 1]).groupJoin(inner: [1, 2, 3, 4, 5],
-                outerKey: { $0 },
-                innerKey: { $0 % 2 },
-                result: { $0 })
-            .select{ ($0, $1.count()) }
-        let dict = counts.toDictionary({ ($0, $1) })
-        XCTAssertEqual(dict[0]!, 2)
-        XCTAssertEqual(dict[1]!, 3)
-    }
-    
-    func testIntersect() {
-        XCTAssertEqual(sinq(1...10).intersect(4...6){ $0 == $1 }.count(), 3)
-        XCTAssertEqual(sinq(1...10).intersect(0...20){ $0 == $1 }.count(), 10)
-        XCTAssertEqual(sinq(10...20).intersect(4...6){ $0 == $1 }.count(), 0)
-        XCTAssertEqual(sinq([1, 1, 1]).intersect([1, 1]){ $0 == $1 }.count(), 1)
-        XCTAssertEqual(sinq([1, 1, 1]).intersect([1, 1]){$0}.count(), 1)
-    }
-    
-    func testJoin() {
-        let pairs = sinq(0..10)
-                .join(inner: 0..10,
-                    outerKey: { $0 },
-                    innerKey: { $0 / 2 },
-                    result: { (half: $0, whole: $1) })
-                .toArray()
-        
-        XCTAssertEqual(pairs.count, 10)
-        for pair in pairs {
-            XCTAssertEqual(pair.whole / 2, pair.half)
-        }
-    }
-
-    func testLast() {
-        XCTAssertNil(sinq(Array<Int>()).lastOrNil())
-        XCTAssertNotNil(sinq([1]).lastOrNil())
-        XCTAssertEqual(sinq([42, 1, 2, 3]).last(), 3)
-        XCTAssertEqual(sinq(Array<Int>()).lastOrDefault(10), 10)
-        XCTAssertEqual(sinq([42, 1, 2, 3]).lastOrDefault(10), 3)
-    }
-  
-    func testMax() {
-        let cities = [("Warsaw", 1717), ("Geneve", 184), ("Amsterdam", 779), ("Zurich", 366)]
-        XCTAssertEqual(sinq(cities).max{$0.1}, 1717)
-        XCTAssertEqual(sinq(cities).argmax{$0.1}.0, "Warsaw")
-    }
-
-    func testMin() {
-        let cities = [("Warsaw", 1717), ("Geneve", 184), ("Amsterdam", 779), ("Zurich", 366)]
-        XCTAssertEqual(sinq(cities).min{$0.1}, 184)
-        XCTAssertEqual(sinq(cities).argmin{$0.1}.0, "Geneve")
-    }
-    
-    func testOrderAndFilter() {
-        let sorted = sinq(0..100).orderBy{$0}.filter{$0 < 10}
-        var counter = 0
-        for elem in sorted {
-            XCTAssertEqual(elem, counter++)
-        }
-        XCTAssertEqual(counter, 10)
-    }
-    
-    func testOrderBy() {
-        let sorted = sinq([1,3,4,2,5,6,9,8,7,0]).orderBy{ $0 }
-        var counter = 0
-        for elem in sorted {
-            XCTAssertEqual(elem, counter++)
-        }
-    }
-    
-    func testOrderByDescending() {
-        let sorted = sinq([1,3,4,2,5,6,9,8,7,0]).orderByDescending{ $0 }
-        var counter = 9
-        for elem in sorted {
-            XCTAssertEqual(elem, counter--)
-        }
-    }
-    
-    func testReverse() {
-        let sequence = sinq([1,2,3,4,5]).reverse()
-        var counter = 5
-        for elem in sequence {
-            XCTAssertEqual(elem, counter--)
-        }
-    }
-
-    func testSelect() {
-        var counter = 0
-        for (idx, elem) in sinq(10..20).select({ ($1, 2*$0) }) {
-            XCTAssertEqual(idx, counter++)
-            XCTAssertEqual(elem, 2*(10+idx))
-        }
-    }
-
-    func testSelectMany() {
-        let results = sinq(0..10).selectMany({ 0..$0 }).toArray()
-        XCTAssertEqual(results.count, 45)
-        var gen = results.generate()
-        for i in 0..10 {
-            for j in 0..i {
-                XCTAssertEqual(gen.next()!, j)
-            }
-        }
-    }
-
-    func testSkip() {
-        let res = sinq(0..10).skip(2)
-        XCTAssertEqual(res.count(), 8)
-        var counter = 2
-        for elem in res {
-            XCTAssertEqual(elem, counter++)
-        }
-    }
-
-    func testSkipWhile() {
-        let res = sinq(0..10).skipWhile({ $0 < 5 })
-        XCTAssertEqual(res.count(), 5)
-        var counter = 5
-        for elem in res {
-            XCTAssertEqual(elem, counter++)
-        }
-    }
-
-    func testTake() {
-        let res = sinq(0..10).take(2)
-        XCTAssertEqual(res.count(), 2)
-        var counter = 0
-        for elem in res {
-            XCTAssertEqual(elem, counter++)
-        }
-    }
-
-    func testTakeWhile() {
-        let res = sinq(0..10).takeWhile{ $0 < 6 }
-        XCTAssertEqual(res.count(), 6)
-        var counter = 0
-        for elem in res {
-            XCTAssertEqual(elem, counter++)
-        }
-    }
-    
-    func testThenBy() {
-        let sorted = sinq([(0, 1), (1, 1), (2, 0), (1, 0), (3, 1), (2, 1), (0, 0), (3, 0) ]).orderBy{$0.0}.thenBy{$0.1}
-        var counter = 0
-        for elem in sorted {
-            XCTAssertEqual(elem.0, counter/2)
-            XCTAssertEqual(elem.1, counter%2)
-            counter += 1
-        }
-    }
-
-    func testThenByDescending() {
-        let sorted = sinq([(0, 1), (1, 1), (2, 0), (1, 0), (3, 1), (2, 1), (0, 0), (3, 0) ]).orderBy{$0.0}.thenByDescending{$0.1}
-        var counter = 0
-        for elem in sorted {
-            XCTAssertEqual(elem.0, counter/2)
-            XCTAssertEqual(elem.1, 1-counter%2)
-            counter += 1
-        }
-    }
-    
-    func testToDictionary() {
-        let res = sinq(0..10).toDictionary{ 10 - $0 }
-        XCTAssertEqual(res.count, 10)
-        for (k, v) in res {
-            XCTAssertEqual(k, 10-v)
-        }
-    }
-
-    func testUnion() {
-        let res1 = sinq([1, 2, 1, 2]).union([3, 3, 2, 1]){$0 == $1}
-        let res2 = sinq([1, 2, 1, 2]).union([3, 3, 2, 1]){$0}
-        XCTAssertEqual(res1.count(), 3)
-        XCTAssertEqual(res2.count(), 3)
-        var counter = 1
-        for elem in res1 {
-            XCTAssertEqual(elem, counter++)
-        }
-        counter = 1
-        for elem in res2 {
-            XCTAssertEqual(elem, counter++)
-        }
-    }
-
+//
+//    func testAll() {
+//        XCTAssertTrue(sinq([11, 12, 15, 10]).all{ $0 >= 10 })
+//        XCTAssertFalse(sinq([11, 12, 15, 10]).all{ $0 > 10 })
+//    }
+//    
+//    func testAny() {
+//        XCTAssertTrue(sinq([11, 12, 15, 10]).any{ $0 <= 10 })
+//        XCTAssertFalse(sinq([11, 12, 15, 10]).any{ $0 > 15 })
+//    }
+//    
+//    func testConcat() {
+//        let sequence = sinq([1,2,3]).concat(sinq([4,5,6]))
+//        var counter = 1
+//        for elem in sequence {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//    }
+//    
+//    func testContains() {
+//        let sequence = sinq(1...6)
+//        for i in 1...6 {
+//            XCTAssertTrue(sequence.contains(i){$0 == $1})
+//            XCTAssertTrue(sequence.contains(i){$0})
+//        }
+//        for i in 7...10 {
+//            XCTAssertFalse(sequence.contains(i){$0 == $1})
+//            XCTAssertFalse(sequence.contains(i){$0})
+//        }
+//    }
+//
+//    func testCount() {
+//        XCTAssertEqual(sinq(0..10).count(), 10)
+//    }
+//
+//    func testDistinct() {
+//        XCTAssertEqual(sinq(0..10).distinct{$0 == $1}.count(), 10)
+//        XCTAssertEqual(sinq(0..10).distinct{$0}.count(), 10)
+//        XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{$0 == $1}.count(), 1)
+//        XCTAssertEqual(sinq(Repeat(count: 10, repeatedValue: 1)).distinct{$0}.count(), 1)
+//    }
+//    
+//    func testElementAt() {
+//        XCTAssertEqual(sinq(0..10).elementAt(2), 2)
+//        // XXX: does not compile without typecast, why?
+//        XCTAssertNil(sinq(0..10).elementAtOrNil(20) as Int?)
+//        XCTAssertEqual(sinq(0..10).elementAt(21, orDefault: 42), 42)
+//    }
+//    
+//    func testExcept() {
+//        XCTAssertEqual(sinq(0..10).except(4..6){$0 == $1}.count(), 8)
+//        XCTAssertEqual(sinq(0..10).except(4..6){$0}.count(), 8)
+//        XCTAssertEqual(sinq([1, 1, 2]).except([2]){$0 == $1}.count(), 1)
+//        XCTAssertEqual(sinq([1, 1, 2]).except([2]){$0}.count(), 1)
+//    }
+//    
+//    func testFirst() {
+//        XCTAssertNil(sinq(Array<Int>()).firstOrNil())
+//        XCTAssertNotNil(sinq([1]).firstOrNil())
+//        XCTAssertEqual(sinq([42, 1, 2, 3]).first(), 42)
+//        XCTAssertEqual(sinq(Array<Int>()).firstOrDefault(10), 10)
+//        XCTAssertEqual(sinq([42, 1, 2, 3]).firstOrDefault(10), 42)
+//    }
+//
+//    func testGroupBy() {
+//        let counts = from([1, 2, 3, 4, 5]).groupBy{ $0 % 2 }.select{ ($0.key, $0.values.count()) }
+//        let dict = counts.toDictionary({ ($0, $1) })
+//        XCTAssertEqual(dict[0]!, 2)
+//        XCTAssertEqual(dict[1]!, 3)
+//    }
+//    
+//    func testGroupJoin() {
+//        let counts = sinq([0, 1]).groupJoin(inner: [1, 2, 3, 4, 5],
+//                outerKey: { $0 },
+//                innerKey: { $0 % 2 },
+//                result: { $0 })
+//            .select{ ($0, $1.count()) }
+//        let dict = counts.toDictionary({ ($0, $1) })
+//        XCTAssertEqual(dict[0]!, 2)
+//        XCTAssertEqual(dict[1]!, 3)
+//    }
+//    
+//    func testIntersect() {
+//        XCTAssertEqual(sinq(1...10).intersect(4...6){ $0 == $1 }.count(), 3)
+//        XCTAssertEqual(sinq(1...10).intersect(0...20){ $0 == $1 }.count(), 10)
+//        XCTAssertEqual(sinq(10...20).intersect(4...6){ $0 == $1 }.count(), 0)
+//        XCTAssertEqual(sinq([1, 1, 1]).intersect([1, 1]){ $0 == $1 }.count(), 1)
+//        XCTAssertEqual(sinq([1, 1, 1]).intersect([1, 1]){$0}.count(), 1)
+//    }
+//    
+//    func testJoin() {
+//        let pairs = sinq(0..10)
+//                .join(inner: 0..10,
+//                    outerKey: { $0 },
+//                    innerKey: { $0 / 2 },
+//                    result: { (half: $0, whole: $1) })
+//                .toArray()
+//        
+//        XCTAssertEqual(pairs.count, 10)
+//        for pair in pairs {
+//            XCTAssertEqual(pair.whole / 2, pair.half)
+//        }
+//    }
+//
+//    func testLast() {
+//        XCTAssertNil(sinq(Array<Int>()).lastOrNil())
+//        XCTAssertNotNil(sinq([1]).lastOrNil())
+//        XCTAssertEqual(sinq([42, 1, 2, 3]).last(), 3)
+//        XCTAssertEqual(sinq(Array<Int>()).lastOrDefault(10), 10)
+//        XCTAssertEqual(sinq([42, 1, 2, 3]).lastOrDefault(10), 3)
+//    }
+//  
+//    func testMax() {
+//        let cities = [("Warsaw", 1717), ("Geneve", 184), ("Amsterdam", 779), ("Zurich", 366)]
+//        XCTAssertEqual(sinq(cities).max{$0.1}, 1717)
+//        XCTAssertEqual(sinq(cities).argmax{$0.1}.0, "Warsaw")
+//    }
+//
+//    func testMin() {
+//        let cities = [("Warsaw", 1717), ("Geneve", 184), ("Amsterdam", 779), ("Zurich", 366)]
+//        XCTAssertEqual(sinq(cities).min{$0.1}, 184)
+//        XCTAssertEqual(sinq(cities).argmin{$0.1}.0, "Geneve")
+//    }
+//    
+//    func testOrderAndFilter() {
+//        let sorted = sinq(0..100).orderBy{$0}.filter{$0 < 10}
+//        var counter = 0
+//        for elem in sorted {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//        XCTAssertEqual(counter, 10)
+//    }
+//    
+//    func testOrderBy() {
+//        let sorted = sinq([1,3,4,2,5,6,9,8,7,0]).orderBy{ $0 }
+//        var counter = 0
+//        for elem in sorted {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//    }
+//    
+//    func testOrderByDescending() {
+//        let sorted = sinq([1,3,4,2,5,6,9,8,7,0]).orderByDescending{ $0 }
+//        var counter = 9
+//        for elem in sorted {
+//            XCTAssertEqual(elem, counter--)
+//        }
+//    }
+//    
+//    func testReverse() {
+//        let sequence = sinq([1,2,3,4,5]).reverse()
+//        var counter = 5
+//        for elem in sequence {
+//            XCTAssertEqual(elem, counter--)
+//        }
+//    }
+//
+//    func testSelect() {
+//        var counter = 0
+//        for (idx, elem) in sinq(10..20).select({ ($1, 2*$0) }) {
+//            XCTAssertEqual(idx, counter++)
+//            XCTAssertEqual(elem, 2*(10+idx))
+//        }
+//    }
+//
+//    func testSelectMany() {
+//        let results = sinq(0..10).selectMany({ 0..$0 }).toArray()
+//        XCTAssertEqual(results.count, 45)
+//        var gen = results.generate()
+//        for i in 0..10 {
+//            for j in 0..i {
+//                XCTAssertEqual(gen.next()!, j)
+//            }
+//        }
+//    }
+//
+//    func testSkip() {
+//        let res = sinq(0..10).skip(2)
+//        XCTAssertEqual(res.count(), 8)
+//        var counter = 2
+//        for elem in res {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//    }
+//
+//    func testSkipWhile() {
+//        let res = sinq(0..10).skipWhile({ $0 < 5 })
+//        XCTAssertEqual(res.count(), 5)
+//        var counter = 5
+//        for elem in res {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//    }
+//
+//    func testTake() {
+//        let res = sinq(0..10).take(2)
+//        XCTAssertEqual(res.count(), 2)
+//        var counter = 0
+//        for elem in res {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//    }
+//
+//    func testTakeWhile() {
+//        let res = sinq(0..10).takeWhile{ $0 < 6 }
+//        XCTAssertEqual(res.count(), 6)
+//        var counter = 0
+//        for elem in res {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//    }
+//    
+//    func testThenBy() {
+//        let sorted = sinq([(0, 1), (1, 1), (2, 0), (1, 0), (3, 1), (2, 1), (0, 0), (3, 0) ]).orderBy{$0.0}.thenBy{$0.1}
+//        var counter = 0
+//        for elem in sorted {
+//            XCTAssertEqual(elem.0, counter/2)
+//            XCTAssertEqual(elem.1, counter%2)
+//            counter += 1
+//        }
+//    }
+//
+//    func testThenByDescending() {
+//        let sorted = sinq([(0, 1), (1, 1), (2, 0), (1, 0), (3, 1), (2, 1), (0, 0), (3, 0) ]).orderBy{$0.0}.thenByDescending{$0.1}
+//        var counter = 0
+//        for elem in sorted {
+//            XCTAssertEqual(elem.0, counter/2)
+//            XCTAssertEqual(elem.1, 1-counter%2)
+//            counter += 1
+//        }
+//    }
+//    
+//    func testToDictionary() {
+//        let res = sinq(0..10).toDictionary{ 10 - $0 }
+//        XCTAssertEqual(res.count, 10)
+//        for (k, v) in res {
+//            XCTAssertEqual(k, 10-v)
+//        }
+//    }
+//
+//    func testUnion() {
+//        let res1 = sinq([1, 2, 1, 2]).union([3, 3, 2, 1]){$0 == $1}
+//        let res2 = sinq([1, 2, 1, 2]).union([3, 3, 2, 1]){$0}
+//        XCTAssertEqual(res1.count(), 3)
+//        XCTAssertEqual(res2.count(), 3)
+//        var counter = 1
+//        for elem in res1 {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//        counter = 1
+//        for elem in res2 {
+//            XCTAssertEqual(elem, counter++)
+//        }
+//    }
+//    
 }
