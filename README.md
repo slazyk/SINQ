@@ -42,15 +42,11 @@ It uses `SinqSequence<T>` wrapper struct in order to do that, **you can wrap any
 
 ## Installation
 
-As of writing, Xcode 6 beta 2 does not support Swift static libraries, and CocoaPods 0.33.1 does not support Frameworks...
+As of writing, Xcode 6 beta 3 does not support Swift static libraries, and CocoaPods 0.33.1 does not support Frameworks...
 
 Easiest option to use SINQ in your project is to clone this repo and add SINQ.xcodeproj to your project/workspace and then add SINQ.framework to frameworks for your target.
 
 After that you just `import SINQ`.
-
-## Troubleshooting
-
-While the library compiles just fine and each one of the samples/tests  from `SINQTests.swift` runs fine, it seems that parsing / compiling all of them at once is sometimes too much for SourceKitService / swift compiler. If Xcode starts using 100% of your CPU for a long time, it might help to comment all of the samples/tests, kill/restart Xcode/SourceKitService/swift and uncomment selectively. And/or be more explicit in code about types and not depend on type inference.
 
 ## List of methods
 
@@ -214,3 +210,24 @@ whereTrue(predicate: T -> Bool) -> SinqSequence<T>
 ```
 zip<S: Sequence, R>(sequence: S, result: (T, S.E) -> R) -> SinqSequence<R>
 ```
+
+## Troubleshooting
+
+Due to bug in `swift` it *sometimes* happens that `swift` compiler and/or `SourceKitService` loop indefinitely while solving type constraints during compilation or indexing. If this happens, to help them solve the constraints, one might have to divide work for them into smaller pieces. For example this would cause inifinite loop:
+```swift
+func testAll() {
+  XCTAssertTrue(sinq([11, 12, 15, 10]).all{ $0 >= 10 })
+  XCTAssertFalse(sinq([11, 12, 15, 10]).all{ $0 > 10 })
+}
+```
+While this does not:
+```swift
+func testAll() {
+  let seq = sinq([11, 12, 15, 10])
+  XCTAssertTrue(seq.all{ $0 >= 10 })
+  XCTAssertFalse(seq.all{ $0 < 13 })
+}
+```
+In this case it seems o be connected to `@auto_closure` arguments of `XCTAssert*`...
+
+In case it happens for you, try to divide the statements like this or be more explicit in code about types and not depend as much on type inference.
