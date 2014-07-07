@@ -12,11 +12,18 @@
 		654A37FD195A364B000B80B0 /* SINQ.h in Headers */ = {isa = PBXBuildFile; fileRef = 654A37FC195A364B000B80B0 /* SINQ.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		654A3803195A364C000B80B0 /* SINQ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 654A37F7195A364B000B80B0 /* SINQ.framework */; };
 		654A380A195A364C000B80B0 /* SINQTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654A3809195A364C000B80B0 /* SINQTests.swift */; };
-		654A3832195A376A000B80B0 /* SINQ-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 654A3827195A3769000B80B0 /* SINQ-iOS.framework */; };
+		654A3832195A376A000B80B0 /* SINQ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 654A3827195A3769000B80B0 /* SINQ.framework */; };
 		65F80A28195C95640095A087 /* SINQTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654A3809195A364C000B80B0 /* SINQTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		65229196196B2C9700377ADE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 654A37EE195A364B000B80B0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 654A3826195A3769000B80B0;
+			remoteInfo = "SINQ-iOS";
+		};
 		654A3804195A364C000B80B0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 654A37EE195A364B000B80B0 /* Project object */;
@@ -62,7 +69,7 @@
 		654A3802195A364C000B80B0 /* SINQTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SINQTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		654A3808195A364C000B80B0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		654A3809195A364C000B80B0 /* SINQTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SINQTests.swift; sourceTree = "<group>"; };
-		654A3827195A3769000B80B0 /* SINQ-iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "SINQ-iOS.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		654A3827195A3769000B80B0 /* SINQ.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SINQ.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		654A3831195A376A000B80B0 /* SINQ-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SINQ-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -93,7 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				654A3832195A376A000B80B0 /* SINQ-iOS.framework in Frameworks */,
+				654A3832195A376A000B80B0 /* SINQ.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,7 +121,7 @@
 			children = (
 				654A37F7195A364B000B80B0 /* SINQ.framework */,
 				654A3802195A364C000B80B0 /* SINQTests.xctest */,
-				654A3827195A3769000B80B0 /* SINQ-iOS.framework */,
+				654A3827195A3769000B80B0 /* SINQ.framework */,
 				654A3831195A376A000B80B0 /* SINQ-iOSTests.xctest */,
 			);
 			name = Products;
@@ -230,7 +237,7 @@
 			);
 			name = "SINQ-iOS";
 			productName = "SINQ-iOS";
-			productReference = 654A3827195A3769000B80B0 /* SINQ-iOS.framework */;
+			productReference = 654A3827195A3769000B80B0 /* SINQ.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		654A3830195A376A000B80B0 /* SINQ-iOSTests */ = {
@@ -246,6 +253,7 @@
 			dependencies = (
 				654A3834195A376A000B80B0 /* PBXTargetDependency */,
 				654A3841195A376D000B80B0 /* PBXTargetDependency */,
+				65229197196B2C9700377ADE /* PBXTargetDependency */,
 			);
 			name = "SINQ-iOSTests";
 			productName = "SINQ-iOSTests";
@@ -364,6 +372,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		65229197196B2C9700377ADE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 654A3826195A3769000B80B0 /* SINQ-iOS */;
+			targetProxy = 65229196196B2C9700377ADE /* PBXContainerItemProxy */;
+		};
 		654A3805195A364C000B80B0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 654A37F6195A364B000B80B0 /* SINQ */;
@@ -557,12 +570,12 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "SINQ-iOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SINQ/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				METAL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SINQ;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -579,12 +592,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "SINQ-iOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SINQ/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				METAL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SINQ;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
