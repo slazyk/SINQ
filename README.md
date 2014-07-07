@@ -51,51 +51,51 @@ After that you just `import SINQ`.
 ## List of methods
 
 ##### `aggregate` / `reduce` - combine all the elements of the sequence into a result
-```
+```swift
 aggregate(combine: (T, T) -> T) -> T
 aggregate<R>(initial: R, combine: (R, T) -> R) -> R
 aggregate<C, R>(initial: C, combine: (C, T) -> C, result: C -> R) -> R
 ```
 ##### `all` - check if a predicate is true for all the elements
-```
+```swift
 all(predicate: T -> Bool) -> Bool
 ```
 ##### `any` - check if not empty, or if a predicate is true for any object
-```
+```swift
 any() -> Bool      
 any(predicate: T -> Bool) -> Bool
 ```
 ##### `concat` - create a sequence concatenating two sequences
-```
+```swift
 concat<S: Sequence>(other: S) -> SinqSequence<T>
 ```
 ##### `contains` - check if the sequence contains an element
-```
+```swift
 contains(value: T, equality: (T, T) -> Bool) -> Bool
 contains<K: Equatable>(value: T, key: T -> K) -> Bool
 ```
 ##### `count` - count the elements in the sequence
-```
+```swift
 func count() -> Int
 ```  
 ##### `distinct` - create a sequence with unique elements, in order
-```
+```swift
 distinct(equality: (T, T) -> Bool) -> SinqSequence<T>
 distinct<K: Hashable>(key: T -> K) -> SinqSequence<T>
 ```
 ##### `elementAt` - get element at given index from the sequence
-```
+```swift
 elementAtOrNil(index: Int) -> T?  
 elementAt(index: Int) -> T
 elementAt(index: Int, orDefault: T) -> T
 ```
 ##### `except` - create sequence with unique elements, excluding given
-```
+```swift
 except<S: Sequence>(sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T> 
 except<S: Sequence, K: Hashable>(sequence: S, key: T -> K) -> SinqSequence<T>  
 ```
 ##### `first` - get first element of the sequence [satisfying a predicate]
-```
+```swift
 first() -> T
 firstOrNil() -> T?
 first(predicate: T -> Bool) -> T
@@ -104,13 +104,13 @@ firstOrNil(predicate: T -> Bool) -> T?
 firstOrDefault(defaultElement: T, predicate: T -> Bool) -> T
 ```
 ##### `groupBy` - create a sequence grouping elements by given key
-```
+```swift
 groupBy<K: Hashable>(key: T -> K) -> SinqSequence<Grouping<K, T>>
 groupBy<K: Hashable, V>(key: T -> K, element: T -> V) -> SinqSequence<Grouping<K, V>>
 groupBy<K: Hashable, V, R>(key: T -> K, element: T -> V, result: (K, SinqSequence<V>) -> R) -> SinqSequence<R>
 ```
 ##### `groupJoin` - create a sequence joining two sequences with grouping
-```
+```swift
 groupJoin<S: Sequence, K: Hashable>
 	(#inner: S, outerKey: T -> K, innerKey: S.E -> K)
 	-> SinqSequence<Grouping<T, S.E>>
@@ -119,12 +119,12 @@ groupJoin<S: Sequence, K: Hashable, R>
  	 result: (T, SinqSequence<S.E>) -> R) -> SinqSequence<R>
 ```
 ##### `intersect` - create a sequence with unique elements present in both sequences
-```
+```swift
 intersect<S: Sequence>(sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
 intersect<S: Sequence, K: Hashable>(sequence: S, key: T -> K) -> SinqSequence<T>
 ```
 ##### `join` - create a sequence joining two sequences without grouping
-```
+```swift
 join<S: Sequence, K: Hashable, R>
 	(#inner: S, outerKey: T -> K, innerKey: S.E -> K,
      result: (T, S.E) -> R) -> SinqSequence<R>
@@ -133,7 +133,7 @@ join<S: Sequence, K: Hashable>
     -> SinqSequence<(T, S.E)>
 ```
 ##### `last` - return last element in the sequence [satisfying a predicate] 
-```
+```swift
 last() -> T
 lastOrNil() -> T?
 last(predicate: T -> Bool) -> T
@@ -142,72 +142,72 @@ lastOrDefault(defaultElement: T) -> T
 lastOrDefault(defaultElement: T, predicate: T -> Bool) -> T
 ```
 ##### `min` / `max` - return the minimum/maximum value of a function for the sequence    
-```
+```swift
 min<R: Comparable>(key: T -> R) -> R
 max<R: Comparable>(key: T -> R) -> R
 ```
 ##### `argmin` / `argmax` - return the element for which the function has the minimum/maximum value
-```
+```swift
 argmin<R: Comparable>(key: T -> R) -> T
 argmax<R: Comparable>(key: T -> R) -> T
 ```
 ##### `orderBy` / `orderByDescending` - create a sequence sorted by given key 
-```
+```swift
 orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T>
 orderByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T>
 ```
 ##### `reverse` - create a sequence with reverse order
-```
+```swift
 reverse() -> SinqSequence<T>
 ```    
 ##### `select` / `map` - create a sequence with results of applying given function
-```
+```swift
 select<V>(selector: T -> V) -> SinqSequence<V>
 select<V>(selector: (T, Int) -> V) -> SinqSequence<V>
 ```
 ##### `selectMany` - create a sequence by concatenating function results for each element
-```
+```swift
 selectMany<S: Sequence>(selector: T -> S) -> SinqSequence<S.E>
 selectMany<S: Sequence>(selector: (T, Int) -> S) -> SinqSequence<S.E>
 selectMany<S: Sequence, R>(selector: T -> S, result: S.E -> R) -> SinqSequence<R>
 selectMany<S: Sequence, R>(selector: (T, Int) -> S, result: S.E -> R) -> SinqSequence<R>
 ```
 ##### `skip` - create a sequence skipping (given number of elements | while predicate holds )
-```
+```swift
 skip(count: Int) -> SinqSequence<T>
 skipWhile(predicate: T -> Bool) -> SinqSequence<T>
 ```
 ##### `take` - create a sequence by taking (given number of elements | while predicate holds )
-```
+```swift
 take(count: Int) -> SinqSequence<T>
 takeWhile(predicate: T -> Bool) -> SinqSequence<T>
 ```
 ##### `thenBy` / `thenByDescending` - create a sequence by additionally sorting on given key
-```
+```swift
 thenBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T>
 thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T>
 ```
 ##### `toArray` - create an array from the sequence
-```
+```swift
 toArray() -> T[]
 ```
 ##### `toDictionary` - create a dictionary from the sequence
-```
+```swift
 toDictionary<K: Hashable, V>(keyValue: T -> (K, V)) -> Dictionary<K, V>
 toDictionary<K: Hashable, V>(key: T -> K, value: T -> V) -> Dictionary<K, V>
 toDictionary<K: Hashable>(key: T -> K) -> Dictionary<K, T>
 ```
 ##### `union` - create a sequence with unique elements from either of the sequences
-```
+```swift
 union<S: Sequence>(sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
 union<S: Sequence, K: Hashable>(sequence: S, key: T -> K) -> SinqSequence<T>
 ```
 ##### `whereTrue` / `filter` - create a sequence only with elements satisfying a predicate
-```
+```swift
 whereTrue(predicate: T -> Bool) -> SinqSequence<T>
 ```
 ##### `zip` - create a sequence by combining pairs of elements from two sequences
-```
+```swift
 zip<S: Sequence, R>(sequence: S, result: (T, S.E) -> R) -> SinqSequence<R>
 ```
 
