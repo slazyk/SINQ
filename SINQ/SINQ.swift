@@ -17,8 +17,7 @@ class SinqSequence<T>: Sequence {
 
     let _seq : SequenceOf<T>
 
-    typealias GeneratorType = SequenceOf<T>.GeneratorType
-    func generate() -> GeneratorType { return _seq.generate() }
+    func generate() -> GeneratorOf<T> { return _seq.generate() }
     
     init<G : Generator where G.Element == T>(_ generate: () -> G) {
         _seq = SequenceOf(generate)
@@ -68,7 +67,7 @@ class SinqSequence<T>: Sequence {
     
     func any() -> Bool {
         var g = self.generate()
-        return g.next() != nil
+        return g.next().getLogicValue()
     }
     
     func any(predicate: T -> Bool) -> Bool {
@@ -126,7 +125,7 @@ class SinqSequence<T>: Sequence {
     // O(N^2) :(
     func distinct(equality: (T, T) -> Bool) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
-            var uniq = T[]()
+            var uniq = [T]()
             var g = self.generate()
             return GeneratorOf {
                 while let e = g.next() {
@@ -164,7 +163,7 @@ class SinqSequence<T>: Sequence {
             return nil
         }
         var g = self.generate()
-        for _ in 0..index {
+        for _ in 0..<index {
             g.next()
         }
         return g.next()
@@ -274,7 +273,7 @@ class SinqSequence<T>: Sequence {
         (key: T -> K, element: T -> V) -> SinqSequence<Grouping<K, V>>
     {
         return SinqSequence<Grouping<K,V>> { () -> GeneratorOf<Grouping<K,V>> in
-            var groups = Dictionary<K, T[]>()
+            var groups = [K:[T]]()
             for element in self {
                 let elemKey = key(element)
                 if var group = groups[elemKey] {
@@ -319,7 +318,7 @@ class SinqSequence<T>: Sequence {
     {
         return SinqSequence<R> { () -> GeneratorOf<R> in
 
-            var innerGrouping = Dictionary<K, S.GeneratorType.Element[]>()
+            var innerGrouping = Dictionary<K, [S.GeneratorType.Element]>()
             for element in inner {
                 let key = innerKey(element)
                 if var group = innerGrouping[key] {
@@ -405,7 +404,7 @@ class SinqSequence<T>: Sequence {
         ) -> SinqSequence<R>
     {
         return SinqSequence<R> { () -> GeneratorOf<R> in
-            var innerGrouping = Dictionary<K, S.GeneratorType.Element[]>()
+            var innerGrouping = Dictionary<K, [S.GeneratorType.Element]>()
             for element in inner {
                 let key = innerKey(element)
                 if var group = innerGrouping[key] {
@@ -553,7 +552,7 @@ class SinqSequence<T>: Sequence {
     }
 
     func reverse() -> SinqSequence<T> {
-        return SinqSequence { () -> IndexingGenerator<T[]> in
+        return SinqSequence { () -> IndexingGenerator<[T]> in
             self.toArray().reverse().generate()
         }
     }
@@ -588,7 +587,7 @@ class SinqSequence<T>: Sequence {
             typealias C = S.GeneratorType.Element
             
             var gen1 = self.generate()
-            var gen2: SequenceOf<C>.GeneratorType = SinqSequence<C>(C[]()).generate()
+            var gen2: SequenceOf<C>.GeneratorType = SinqSequence<C>([C]()).generate()
             var counter = 0
             
             return GeneratorOf {
@@ -624,7 +623,7 @@ class SinqSequence<T>: Sequence {
     func skip(count: Int) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
             var gen = self.generate()
-            for _ in 0..count {
+            for _ in 0..<count {
                 gen.next()
             }
             return gen
@@ -700,8 +699,8 @@ class SinqSequence<T>: Sequence {
         return orderByDescending(key)
     }
 
-    func toArray() -> T[] {
-        return T[](self)
+    func toArray() -> [T] {
+        return [T](self)
     }
     
     func toDictionary
@@ -781,8 +780,9 @@ class SinqSequence<T>: Sequence {
 
 class SinqOrderedSequence<T> : SinqSequence<T>, Sequence {
     
-    override func generate() -> GeneratorType {
-        let sorted = sort(sinq(_seq).toArray()) {
+    override func generate() -> GeneratorOf<T> {
+        var array = sinq(_seq).toArray()
+        sort(&array) {
             (a: T, b: T) in
             for comparator in self.comparators {
                 if comparator(a, b) {
@@ -794,7 +794,7 @@ class SinqOrderedSequence<T> : SinqSequence<T>, Sequence {
             }
             return false
         }
-        return GeneratorOf(sorted.generate())
+        return GeneratorOf(array.generate())
     }
 
     init<S: Sequence where S.GeneratorType.Element == T>(source: S, comparators: Array<(T, T) -> Bool>) {
