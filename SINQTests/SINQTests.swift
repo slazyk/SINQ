@@ -73,6 +73,24 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(notUnique.except([2]){$0}.count(), 1)
     }
 
+    func testFilterIsLazy() {
+        var timesCalled = 0
+        let predicate: Int -> Bool = { x in
+            timesCalled += 1
+            return x % 2 == 0
+        }
+        
+        let longSequence = sinq(1...1000).filter(predicate)
+        
+        var gen = longSequence.generate()
+        
+        for i in 1...5 {
+            XCTAssertEqual(gen.next()!, 2*i)
+            XCTAssertEqual(timesCalled, 2*i)
+        }
+        
+    }
+    
     func testFirst() {
         let empty = sinq(0..<0)
         let nonEmpty = sinq(0..<1)
@@ -194,6 +212,20 @@ class SINQTests: XCTestCase {
         for (idx, elem) in sinq(10..<20).select({ ($1, 2*$0) }) {
             XCTAssertEqual(idx, counter++)
             XCTAssertEqual(elem, 2*(10+idx))
+        }
+    }
+    
+    func testSelectIsLazy() {
+        var calledTimes = 0
+        let identity: Int -> Int = { x in
+            calledTimes += 1
+            return x
+        }
+        let longSequence = sinq(1...1000).select(identity)
+        var generator = longSequence.generate()
+        for i in 1...5 {
+            XCTAssertEqual(generator.next()!, i)
+            XCTAssertEqual(calledTimes, i)
         }
     }
 

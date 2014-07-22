@@ -24,6 +24,13 @@
 			remoteGlobalIDString = 654A3826195A3769000B80B0;
 			remoteInfo = "SINQ-iOS";
 		};
+		65229198196B2C9700377ADE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 654A37EE195A364B000B80B0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 654A3826195A3769000B80B0;
+			remoteInfo = "SINQ-iOS";
+		};
 		654A3804195A364C000B80B0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 654A37EE195A364B000B80B0 /* Project object */;
@@ -254,6 +261,7 @@
 				654A3834195A376A000B80B0 /* PBXTargetDependency */,
 				654A3841195A376D000B80B0 /* PBXTargetDependency */,
 				65229197196B2C9700377ADE /* PBXTargetDependency */,
+				65229199196B2C9700377ADE /* PBXTargetDependency */,
 			);
 			name = "SINQ-iOSTests";
 			productName = "SINQ-iOSTests";
@@ -376,6 +384,11 @@
 			isa = PBXTargetDependency;
 			target = 654A3826195A3769000B80B0 /* SINQ-iOS */;
 			targetProxy = 65229196196B2C9700377ADE /* PBXContainerItemProxy */;
+		};
+		65229199196B2C9700377ADE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 654A3826195A3769000B80B0 /* SINQ-iOS */;
+			targetProxy = 65229198196B2C9700377ADE /* PBXContainerItemProxy */;
 		};
 		654A3805195A364C000B80B0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -616,7 +629,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "SINQ-iOSTests/Info.plist";
+				INFOPLIST_FILE = SINQTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				METAL_ENABLE_DEBUG_INFO = YES;
@@ -632,7 +645,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "SINQ-iOSTests/Info.plist";
+				INFOPLIST_FILE = SINQTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				METAL_ENABLE_DEBUG_INFO = NO;

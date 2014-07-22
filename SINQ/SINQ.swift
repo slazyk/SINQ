@@ -13,33 +13,33 @@
 //extension SequenceOf {
 
 // but we want to be inherited from anyways, hence class and composition
-class SinqSequence<T>: Sequence {
+public class SinqSequence<T>: Sequence {
 
-    let _seq : SequenceOf<T>
+    private let sequence : SequenceOf<T>
 
-    func generate() -> GeneratorOf<T> { return _seq.generate() }
+    public func generate() -> GeneratorOf<T> { return sequence.generate() }
     
-    init<G : Generator where G.Element == T>(_ generate: () -> G) {
-        _seq = SequenceOf(generate)
+    public init<G : Generator where G.Element == T>(_ generate: () -> G) {
+        sequence = SequenceOf(generate)
     }
     
-    init<S : Sequence where S.GeneratorType.Element == T>(_ self_: S) {
-        _seq = SequenceOf(self_)
+    public init<S : Sequence where S.GeneratorType.Element == T>(_ self_: S) {
+        sequence = SequenceOf(self_)
     }
     
-    func aggregate(combine: (T, T) -> T) -> T {
+    public final func aggregate(combine: (T, T) -> T) -> T {
         return reduce(combine)
     }
     
-    func aggregate<R>(initial: R, combine: (R, T) -> R) -> R {
+    public final func aggregate<R>(initial: R, combine: (R, T) -> R) -> R {
         return reduce(initial, combine: combine)
     }
 
-    func aggregate<C, R>(initial: C, combine: (C, T) -> C, result: C -> R) -> R {
+    public final func aggregate<C, R>(initial: C, combine: (C, T) -> C, result: C -> R) -> R {
         return reduce(initial, combine: combine, result: result)
     }
     
-    func reduce(combine: (T, T) -> T) -> T {
+    public func reduce(combine: (T, T) -> T) -> T {
         var g = self.generate()
         var r = g.next()!
         while let e = g.next() {
@@ -48,15 +48,15 @@ class SinqSequence<T>: Sequence {
         return r
     }
     
-    func reduce<R>(initial: R, combine: (R, T) -> R) -> R {
-        return Swift.reduce(_seq, initial, combine)
+    public func reduce<R>(initial: R, combine: (R, T) -> R) -> R {
+        return Swift.reduce(sequence, initial, combine)
     }
 
-    func reduce<C, R>(initial: C, combine: (C, T) -> C, result: C -> R) -> R {
-        return result(Swift.reduce(_seq, initial, combine))
+    public func reduce<C, R>(initial: C, combine: (C, T) -> C, result: C -> R) -> R {
+        return result(reduce(initial, combine: combine))
     }
     
-    func all(predicate: T -> Bool) -> Bool {
+    public func all(predicate: T -> Bool) -> Bool {
         for elem in self {
             if !predicate(elem) {
                 return false
@@ -65,12 +65,12 @@ class SinqSequence<T>: Sequence {
         return true
     }
     
-    func any() -> Bool {
+    public func any() -> Bool {
         var g = self.generate()
         return g.next().getLogicValue()
     }
     
-    func any(predicate: T -> Bool) -> Bool {
+    public func any(predicate: T -> Bool) -> Bool {
         for elem in self {
             if predicate(elem) {
                 return true
@@ -79,7 +79,7 @@ class SinqSequence<T>: Sequence {
         return false
     }
     
-    func concat
+    public func concat
         <S: Sequence where S.GeneratorType.Element == T>
         (other: S) -> SinqSequence<T>
     {
@@ -96,7 +96,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func contains(value: T, equality: (T, T) -> Bool) -> Bool {
+    public func contains(value: T, equality: (T, T) -> Bool) -> Bool {
         for e in self {
             if equality(e, value) {
                 return true
@@ -105,15 +105,15 @@ class SinqSequence<T>: Sequence {
         return false
     }
 
-    func contains<K: Equatable>(value: T, key: T -> K) -> Bool {
-        return self.contains(value, equality: { key($0)==key($1) })
+    public func contains<K: Equatable>(value: T, key: T -> K) -> Bool {
+        return contains(value, equality: { key($0)==key($1) })
     }
     
-//    func contains<T: Equatable> (value: T) -> Bool {
+//    public func contains<T: Equatable> (value: T) -> Bool {
 //        return self.contains(value, equality: { $0 == $1 })
 //    }
     
-    func count() -> Int {
+    public func count() -> Int {
         var counter = 0
         var gen = self.generate()
         while gen.next() {
@@ -123,7 +123,7 @@ class SinqSequence<T>: Sequence {
     }
     
     // O(N^2) :(
-    func distinct(equality: (T, T) -> Bool) -> SinqSequence<T> {
+    public func distinct(equality: (T, T) -> Bool) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
             var uniq = [T]()
             var g = self.generate()
@@ -139,7 +139,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func distinct<K: Hashable>(key: T -> K) -> SinqSequence<T> {
+    public func distinct<K: Hashable>(key: T -> K) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
             var uniq = Dictionary<K, Bool>()
             var g = self.generate()
@@ -154,11 +154,11 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-//    func distinct<T: Equatable>() -> SinqSequence<T> {
+//    public func distinct<T: Equatable>() -> SinqSequence<T> {
 //        return distinct({ $0 == $1 })
 //    }
     
-    func elementAtOrNil(index: Int) -> T? {
+    public func elementAtOrNil(index: Int) -> T? {
         if (index < 0) {
             return nil
         }
@@ -169,11 +169,11 @@ class SinqSequence<T>: Sequence {
         return g.next()
     }
     
-    func elementAt(index: Int) -> T {
+    public func elementAt(index: Int) -> T {
         return elementAtOrNil(index)!
     }
     
-    func elementAt(index: Int, orDefault def: T) -> T {
+    public func elementAt(index: Int, orDefault def: T) -> T {
         switch elementAtOrNil(index) {
         case .Some(let e): return e
         case .None: return def
@@ -181,7 +181,7 @@ class SinqSequence<T>: Sequence {
     }
     
     // O(N*M) :(
-    func except
+    public func except
         <S: Sequence where T == S.GeneratorType.Element>
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
@@ -199,7 +199,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func except
+    public func except
         <S: Sequence, K: Hashable where T == S.GeneratorType.Element>
         (sequence: S, key: T -> K) -> SinqSequence<T>
     {
@@ -217,34 +217,34 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-//    func except
+//    public func except
 //        <S: Sequence, T: Equatable where T == S.GeneratorType.Element>
 //        (sequence: S) -> SinqSequence<T>
 //    {
 //        return self.except(sequence, equality: { $0 == $1 })
 //    }
     
-    func first() -> T {
+    public func first() -> T {
         return self.firstOrNil()!
     }
     
-    func firstOrNil() -> T? {
+    public func firstOrNil() -> T? {
         var g = self.generate()
         return g.next()
     }
 
-    func firstOrDefault(defaultElement: T) -> T {
+    public func firstOrDefault(defaultElement: T) -> T {
         switch(self.firstOrNil()) {
         case .Some(let e): return e
         case .None: return defaultElement
         }
     }
     
-    func first(predicate: T -> Bool) -> T {
+    public func first(predicate: T -> Bool) -> T {
         return self.firstOrNil(predicate)!
     }
     
-    func firstOrNil(predicate: T -> Bool) -> T? {
+    public func firstOrNil(predicate: T -> Bool) -> T? {
         var g = self.generate()
         while let e = g.next() {
             if predicate(e) {
@@ -254,21 +254,21 @@ class SinqSequence<T>: Sequence {
         return nil
     }
     
-    func firstOrDefault(defaultElement: T, predicate: T -> Bool) -> T {
+    public func firstOrDefault(defaultElement: T, predicate: T -> Bool) -> T {
         switch firstOrNil(predicate) {
         case .Some(let e): return e
         case .None: return defaultElement
         }
     }
     
-    func groupBy
+    public func groupBy
         <K: Hashable>
         (key: T -> K) -> SinqSequence<Grouping<K, T>>
     {
         return self.groupBy(key, element: { $0 })
     }
 
-    func groupBy
+    public func groupBy
         <K: Hashable, V>
         (key: T -> K, element: T -> V) -> SinqSequence<Grouping<K, V>>
     {
@@ -297,7 +297,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func groupBy
+    public func groupBy
         <K: Hashable, V, R>
         (   key: T -> K,
             element: T -> V,
@@ -308,7 +308,7 @@ class SinqSequence<T>: Sequence {
             .select{ result($0.key, $0.values) }
     }
     
-    func groupJoin
+    public func groupJoin
         <S: Sequence, K: Hashable, R>
         (   #inner: S,
             outerKey: T -> K,
@@ -345,7 +345,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func groupJoin
+    public func groupJoin
         <S: Sequence, K: Hashable>
         (   #inner: S,
             outerKey: T -> K,
@@ -359,7 +359,7 @@ class SinqSequence<T>: Sequence {
     }
     
     // O(N*M) :(
-    func intersect
+    public func intersect
         <S: Sequence where S.GeneratorType.Element == T>
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
@@ -377,7 +377,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func intersect
+    public func intersect
         <S: Sequence, K: Hashable where S.GeneratorType.Element == T>
         (sequence: S, key: T -> K) -> SinqSequence<T>
     {
@@ -395,7 +395,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func join
+    public func join
         <S: Sequence, K: Hashable, R>
         (   #inner: S,
             outerKey: T -> K,
@@ -436,7 +436,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func join
+    public func join
         <S: Sequence, K: Hashable>
         (   #inner: S,
             outerKey: T -> K,
@@ -449,11 +449,11 @@ class SinqSequence<T>: Sequence {
                     result: { ($0, $1) })
     }
     
-    func last(predicate: T -> Bool) -> T {
+    public func last(predicate: T -> Bool) -> T {
         return self.lastOrNil(predicate)!
     }
     
-    func lastOrNil(predicate: T -> Bool) -> T? {
+    public func lastOrNil(predicate: T -> Bool) -> T? {
         var eOrNil: T? = nil
         var g = self.generate()
         while let e = g.next() {
@@ -464,14 +464,14 @@ class SinqSequence<T>: Sequence {
         return eOrNil
     }
     
-    func lastOrDefault(defaultElement: T, predicate: T -> Bool) -> T {
+    public func lastOrDefault(defaultElement: T, predicate: T -> Bool) -> T {
         switch self.lastOrNil(predicate) {
         case .Some(let e): return e
         case .None: return defaultElement
         }
     }
 
-    func lastOrNil() -> T? {
+    public func lastOrNil() -> T? {
         var eOrNil: T? = nil
         var g = self.generate()
         while let e = g.next() {
@@ -480,18 +480,18 @@ class SinqSequence<T>: Sequence {
         return eOrNil
     }
     
-    func last() -> T {
+    public func last() -> T {
         return self.lastOrNil()!
     }
     
-    func lastOrDefault(defaultElement: T) -> T {
+    public func lastOrDefault(defaultElement: T) -> T {
         switch (self.lastOrNil()) {
         case .Some(let e): return e
         case .None: return defaultElement
         }
     }
     
-    func max<R: Comparable>(key: T -> R) -> R {
+    public func max<R: Comparable>(key: T -> R) -> R {
         var gen = self.generate()
         var ret = key(gen.next()!)
         while let elem = gen.next().map(key) {
@@ -502,7 +502,7 @@ class SinqSequence<T>: Sequence {
         return ret
     }
     
-    func min<R: Comparable>(key: T -> R) -> R {
+    public func min<R: Comparable>(key: T -> R) -> R {
         var gen = self.generate()
         var ret = key(gen.next()!)
         while let elem = gen.next().map(key) {
@@ -513,7 +513,7 @@ class SinqSequence<T>: Sequence {
         return ret
     }
     
-    func argmax<R: Comparable>(key: T -> R) -> T {
+    public func argmax<R: Comparable>(key: T -> R) -> T {
         var gen = self.generate()
         var ret = gen.next()!
         var res = key(ret)
@@ -527,7 +527,7 @@ class SinqSequence<T>: Sequence {
         return ret
     }
     
-    func argmin<R: Comparable>(key: T -> R) -> T {
+    public func argmin<R: Comparable>(key: T -> R) -> T {
         var gen = self.generate()
         var ret = gen.next()!
         var res = key(ret)
@@ -541,27 +541,27 @@ class SinqSequence<T>: Sequence {
         return ret
     }
     
-    func orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public func orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         let comparator = { key($0) < key($1) }
-        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
+        return SinqOrderedSequence(source: sequence, comparators: [ comparator ])
     }
     
-    func orderByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public func orderByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         let comparator = { key($0) > key($1) }
-        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
+        return SinqOrderedSequence(source: sequence, comparators: [ comparator ])
     }
 
-    func reverse() -> SinqSequence<T> {
+    public func reverse() -> SinqSequence<T> {
         return SinqSequence { () -> IndexingGenerator<[T]> in
             self.toArray().reverse().generate()
         }
     }
     
-    func select<V>(selector: T -> V) -> SinqSequence<V> {
+    public func select<V>(selector: T -> V) -> SinqSequence<V> {
         return self.select({ (x, _) in selector(x) })
     }
 
-    func select<V>(selector: (T, Int) -> V) -> SinqSequence<V> {
+    public func select<V>(selector: (T, Int) -> V) -> SinqSequence<V> {
         return SinqSequence<V> { () -> GeneratorOf<V> in
             var g = self.generate()
             var counter = 0
@@ -574,15 +574,15 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func map<V>(selector: T -> V) -> SinqSequence<V> {
+    public final func map<V>(selector: T -> V) -> SinqSequence<V> {
         return select(selector)
     }
     
-    func map<V>(selector: (T, Int) -> V) -> SinqSequence<V> {
+    public final func map<V>(selector: (T, Int) -> V) -> SinqSequence<V> {
         return select(selector)
     }
 
-    func selectMany<S: Sequence, R>(selector: (T, Int) -> S, result: S.GeneratorType.Element -> R) -> SinqSequence<R> {
+    public func selectMany<S: Sequence, R>(selector: (T, Int) -> S, result: S.GeneratorType.Element -> R) -> SinqSequence<R> {
         return SinqSequence<R> { () -> GeneratorOf<R> in
             typealias C = S.GeneratorType.Element
             
@@ -606,21 +606,21 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func selectMany<S: Sequence, R>(selector: T -> S, result: S.GeneratorType.Element -> R) -> SinqSequence<R> {
+    public func selectMany<S: Sequence, R>(selector: T -> S, result: S.GeneratorType.Element -> R) -> SinqSequence<R> {
         return selectMany({ (x, _) in selector(x) }, result)
     }
 
-    func selectMany<S: Sequence>(selector: (T, Int) -> S) -> SinqSequence<S.GeneratorType.Element> {
+    public func selectMany<S: Sequence>(selector: (T, Int) -> S) -> SinqSequence<S.GeneratorType.Element> {
         return selectMany(selector, result: { $0 })
     }
     
-    func selectMany<S: Sequence>(selector: T -> S) -> SinqSequence<S.GeneratorType.Element> {
+    public func selectMany<S: Sequence>(selector: T -> S) -> SinqSequence<S.GeneratorType.Element> {
         return selectMany({ (x, _) in selector(x) }, result: { $0 })
     }
     
     // TODO: single
     
-    func skip(count: Int) -> SinqSequence<T> {
+    public func skip(count: Int) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
             var gen = self.generate()
             for _ in 0..<count {
@@ -630,7 +630,7 @@ class SinqSequence<T>: Sequence {
         }
     }
 
-    func skipWhile(predicate: T -> Bool) -> SinqSequence<T> {
+    public func skipWhile(predicate: T -> Bool) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
             var found = false
             var gen = self.generate()
@@ -652,7 +652,7 @@ class SinqSequence<T>: Sequence {
 
     // TODO: sum
     
-    func take(count: Int) -> SinqSequence<T> {
+    public func take(count: Int) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
             var gen = self.generate()
             var counter = 0
@@ -667,7 +667,7 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func takeWhile(predicate: T -> Bool) -> SinqSequence<T> {
+    public func takeWhile(predicate: T -> Bool) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
             var found = false
             var gen = self.generate()
@@ -691,19 +691,19 @@ class SinqSequence<T>: Sequence {
     }
     
     
-    func thenBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public func thenBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         return orderBy(key)
     }
     
-    func thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public func thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         return orderByDescending(key)
     }
 
-    func toArray() -> [T] {
+    public func toArray() -> [T] {
         return [T](self)
     }
     
-    func toDictionary
+    public func toDictionary
         <K: Hashable, V>
         (keyValue: T -> (K, V)) -> Dictionary<K, V>
     {
@@ -715,7 +715,7 @@ class SinqSequence<T>: Sequence {
         return dict
     }
     
-    func toDictionary
+    public func toDictionary
         <K: Hashable, V>
         (key: T -> K, value: T -> V) -> Dictionary<K, V>
     {
@@ -726,7 +726,7 @@ class SinqSequence<T>: Sequence {
         return dict
     }
 
-    func toDictionary
+    public func toDictionary
         <K: Hashable>
         (key: T -> K) -> Dictionary<K, T>
     {
@@ -740,21 +740,21 @@ class SinqSequence<T>: Sequence {
     //TODO: sequence equal
  
     // O(N*(N+M)) :(
-    func union
+    public func union
         <S: Sequence where S.GeneratorType.Element == T>
         (sequence: S, equality: (T, T) -> Bool) -> SinqSequence<T>
     {
         return self.distinct(equality).concat(sinq(sequence).distinct(equality).except(self, equality: equality))
     }
     
-    func union
+    public func union
         <S: Sequence, K: Hashable where S.GeneratorType.Element == T>
         (sequence: S, key: T -> K) -> SinqSequence<T>
     {
         return self.distinct(key).concat(sinq(sequence).distinct(key).except(self, key: key))
     }
 
-    func zip<S: Sequence, R>(sequence: S, result: (T, S.GeneratorType.Element) -> R) -> SinqSequence<R> {
+    public func zip<S: Sequence, R>(sequence: S, result: (T, S.GeneratorType.Element) -> R) -> SinqSequence<R> {
         return SinqSequence<R> { () -> GeneratorOf<R> in
             var gen1 = self.generate()
             var gen2 = sequence.generate()
@@ -767,21 +767,30 @@ class SinqSequence<T>: Sequence {
         }
     }
     
-    func whereTrue(predicate: T -> Bool) -> SinqSequence<T> {
-        return SinqSequence(Swift.filter(self, predicate))
+    public func whereTrue(predicate: T -> Bool) -> SinqSequence<T> {
+        return SinqSequence { () -> GeneratorOf<T> in
+            var gen = self.generate()
+            return GeneratorOf {
+                while let e = gen.next() {
+                    if predicate(e) {
+                        return e
+                    }
+                }
+                return nil
+            }
+        }
     }
     
-    func filter(predicate: T -> Bool) -> SinqSequence<T> {
+    public final func filter(predicate: T -> Bool) -> SinqSequence<T> {
         return whereTrue(predicate)
     }
 
-    
 }
 
-class SinqOrderedSequence<T> : SinqSequence<T>, Sequence {
+public class SinqOrderedSequence<T> : SinqSequence<T>, Sequence {
     
-    override func generate() -> GeneratorOf<T> {
-        var array = sinq(_seq).toArray()
+    public override func generate() -> GeneratorOf<T> {
+        var array = sinq(sequence).toArray()
         sort(&array) {
             (a: T, b: T) in
             for comparator in self.comparators {
@@ -797,56 +806,56 @@ class SinqOrderedSequence<T> : SinqSequence<T>, Sequence {
         return GeneratorOf(array.generate())
     }
 
-    init<S: Sequence where S.GeneratorType.Element == T>(source: S, comparators: Array<(T, T) -> Bool>) {
+    public init<S: Sequence where S.GeneratorType.Element == T>(source: S, comparators: Array<(T, T) -> Bool>) {
         self.comparators = comparators
         super.init(source)
     }
     
-    let comparators : Array<(T, T) -> Bool>
+    private let comparators : Array<(T, T) -> Bool>
     
-    override func orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public override func orderBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         let comparator = { key($0) < key($1) }
-        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
+        return SinqOrderedSequence(source: sequence, comparators: [ comparator ])
     }
     
-    override func orderByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public override func orderByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         let comparator = { key($0) > key($1) }
-        return SinqOrderedSequence(source: _seq, comparators: [ comparator ])
+        return SinqOrderedSequence(source: sequence, comparators: [ comparator ])
     }
 
-    override func thenBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public override func thenBy<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         var newComparators = comparators
         newComparators += { key($0) < key($1) }
-        return SinqOrderedSequence(source: _seq, comparators: newComparators)
+        return SinqOrderedSequence(source: sequence, comparators: newComparators)
     }
     
-    override func thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
+    public override func thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T> {
         var newComparators = comparators
         newComparators += { key($0) > key($1) }
-        return SinqOrderedSequence(source: _seq, comparators: newComparators)
+        return SinqOrderedSequence(source: sequence, comparators: newComparators)
     }
     
     // override to filter before sorting...
-    override func whereTrue(predicate: T -> Bool) -> SinqSequence<T> {
-        return SinqOrderedSequence(source: sinq(_seq).whereTrue(predicate), comparators: comparators)
+    public override func whereTrue(predicate: T -> Bool) -> SinqSequence<T> {
+        return SinqOrderedSequence(source: sinq(sequence).whereTrue(predicate), comparators: comparators)
     }
     
 }
 
-func from <S: Sequence> (sequence: S) -> SinqSequence<S.GeneratorType.Element> {
+public func from <S: Sequence> (sequence: S) -> SinqSequence<S.GeneratorType.Element> {
     return SinqSequence(sequence)
 }
 
-func sinq <S: Sequence> (sequence: S) -> SinqSequence<S.GeneratorType.Element> {
+public func sinq <S: Sequence> (sequence: S) -> SinqSequence<S.GeneratorType.Element> {
     return SinqSequence(sequence)
 }
 
-struct Grouping<K, V> {
-    let key: K
-    let values: SinqSequence<V>
+public struct Grouping<K, V> {
+    public let key: K
+    public let values: SinqSequence<V>
 }
 
 extension Grouping: Sequence {
     typealias GeneratorType = SinqSequence<V>.GeneratorType
-    func generate() -> GeneratorType { return values.generate() }
+    public func generate() -> GeneratorType { return values.generate() }
 }
