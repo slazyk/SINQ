@@ -1,6 +1,6 @@
-# SINQ - Swift Integrated Native Query
+# SINQ - Swift Integrated Query
 
-Swift has generic Collections and Sequences as well as some universal free functions to work with them. What is missing is a fluent interface that would make working with them easy - like list comprehensions in many languages or LINQ in .NET. The operations should: require **no typecasts**, be **easily chained**, work on **any sequences**, be **performed lazily** where possible.
+Swift has generic Collections and Sequences as well as some universal free functions to work with them. What is missing is a fluent interface that would make working with them easy¹ - like list comprehensions in many languages or LINQ in .NET. The operations should: require **no typecasts**, be **easily chained**, work on **any sequences**, be **performed lazily** where possible.
 
 ## Overview
 
@@ -13,24 +13,36 @@ SINQ is brought to you by Leszek Ślażyński (slazyk), you can follow me on [tw
 The main goal of SINQ is to provide a *fluent* interface for working with collections. The way it tries to accomplish that is with **chaining of methods**. Most of the operations are **performed lazily**, i.e. computations are deferred and done only for the part of the result you enumerate. Everything is typed - **no typecasts required**. Examples:
 
 ```swift
-from([1, 4, 2, 3, 5]).whereTrue{ $0 > 2 }.orderBy{ $0 }.select{ 2 * $0 }
+let nums1 = from([1, 4, 2, 3, 5]).whereTrue{ $0 > 2 }.orderBy{ $0 }.select{ 2 * $0 }
+// or less (linq | sql)-esque 
+let nums2 = sinq([1, 4, 2, 3, 5]).filter{ $0 > 2 }.orderBy{ $0 }.map{ 2 * $0 }
 
-let employees : Employee[] = ...
+// path1 : String = ..., path2: String = ...
+let commonComponents = sinq(path1.pathComponents)
+    .zip(path2.pathComponents) { ($0, $1) }
+    .takeWhile { $0 == $1 }
+    .count()
 
-from(employees).groupBy{ $0.manager }.select{ ($0.key, $0.values.count()) }
+let prefixLength = sinq(path1).zip(path2){ ($0, $1) }.takeWhile{ $0 == $1 }.count()
 
-from(employees).selectMany{ $0.tasks }.orderBy{ $0.priority }
+// available : String[] = ..., blacklist : String[] = ...
+let next = sinq(available).except(blacklist){ $0 }.firstOrDefault("unknown")
 
-sinq(employees).whereTrue{ $0.salary > 1337 }.orderBy{ $0.salary }
-from(employees).orderBy{ $0.salary }.takeWhile{ $0.salary > 1337 }
+// employees : Employee[] = ...
 
-let products : Product[] = ...
-let categories : Category[] = ...
+let headCnt = sinq(employees).groupBy{ $0.manager }.map{ ($0.key, $0.values.count()) }
 
-sinq(categories).join(inner: products,
-					  outerKey: { $0.id },
-					  innerKey: { $0.categoryId },
-					  result: { "\($0.name) / \($1.name)" })
+let allTasks = from(employees).selectMany{ $0.tasks }.orderBy{ $0.priority }
+
+let elite1 = sinq(employees).whereTrue{ $0.salary > 1337 }.orderBy{ $0.salary }
+let elite2 = from(employees).orderBy{ $0.salary }.takeWhile{ $0.salary > 1337 }
+
+// products : Product[] = ..., categories : Category[] = ...
+
+let breadcrumbs = sinq(categories).join(inner: products,
+                                     outerKey: { $0.id },
+                                     innerKey: { $0.categoryId },
+                                       result: { "\($0.name) / \($1.name)" })
 
 ```
 
@@ -42,7 +54,7 @@ It uses `SinqSequence<T>` wrapper struct in order to do that, **you can wrap any
 
 ## Installation
 
-As of writing, Xcode 6 beta 3 does not support Swift static libraries, and CocoaPods 0.33.1 does not support Frameworks...
+As of writing, Xcode 6 beta 4 does not support Swift static libraries, and CocoaPods 0.33.1 does not support Frameworks...
 
 Easiest option to use SINQ in your project is to clone this repo and add SINQ.xcodeproj to your project/workspace and then add SINQ.framework to frameworks for your target.
 
@@ -231,3 +243,6 @@ func testAll() {
 In this case it seems o be connected to `@auto_closure` arguments of `XCTAssert*`...
 
 In case it happens for you, try to divide the statements like this or be more explicit in code about types and not depend as much on type inference.
+
+---
+¹ - this statement might become less true in the future, e.g. in Beta 4 Apple introduced `lazy()` which is similar to subset of `sinq()` in that it adds lazy chainable `.map` `.filter` `.reverse` `.array` and subscripting.
