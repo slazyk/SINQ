@@ -304,7 +304,7 @@ public class SinqSequence<T>: SequenceType {
             result: (K, SinqSequence<V>) -> R
         ) -> SinqSequence<R>
     {
-        return self.groupBy(key, element)
+        return self.groupBy(key, element: element)
             .select{ result($0.key, $0.values) }
     }
     
@@ -607,7 +607,7 @@ public class SinqSequence<T>: SequenceType {
     }
     
     public func selectMany<S: SequenceType, R>(selector: T -> S, result: S.Generator.Element -> R) -> SinqSequence<R> {
-        return selectMany({ (x, _) in selector(x) }, result)
+        return selectMany({ (x, _) in selector(x) }, result: result)
     }
 
     public func selectMany<S: SequenceType>(selector: (T, Int) -> S) -> SinqSequence<S.Generator.Element> {
