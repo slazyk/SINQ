@@ -69,6 +69,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1CB7874F1AB0FC7500CAEEB3 /* SINQ.podspec.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SINQ.podspec.json; sourceTree = "<group>"; };
 		6543995B195B773F0001104C /* SINQ.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SINQ.swift; sourceTree = "<group>"; };
 		654A37F7195A364B000B80B0 /* SINQ.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SINQ.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		654A37FB195A364B000B80B0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -117,6 +118,7 @@
 		654A37ED195A364B000B80B0 = {
 			isa = PBXGroup;
 			children = (
+				1CB7874F1AB0FC7500CAEEB3 /* SINQ.podspec.json */,
 				654A37F9195A364B000B80B0 /* SINQ */,
 				654A3806195A364C000B80B0 /* SINQ Tests */,
 				654A37F8195A364B000B80B0 /* Products */,
