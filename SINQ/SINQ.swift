@@ -618,7 +618,41 @@ public class SinqSequence<T>: SequenceType {
         return selectMany({ (x, _) in selector(x) }, result: { $0 })
     }
     
-    // TODO: single
+    public func single() -> T {
+        return self.singleOrNil()!
+    }
+    
+    public func singleOrNil() -> T? {
+        var gen = self.generate()
+        if let first = gen.next() {
+            if let second = gen.next() {
+                return nil
+            } else {
+                return first
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    public func singleOrDefault(defaultElement: T) -> T {
+        switch (self.singleOrNil()) {
+        case .Some(let e): return e
+        case .None: return defaultElement
+        }
+    }
+    
+    public func single(predicate: T -> Bool) -> T {
+        return self.whereTrue(predicate).single()
+    }
+    
+    public func singleOrNil(predicate: T -> Bool) -> T? {
+        return self.whereTrue(predicate).singleOrNil()
+    }
+    
+    public func singleOrDefault(defaultElement: T, predicate: T -> Bool) -> T {
+        return self.whereTrue(predicate).singleOrDefault(defaultElement)
+    }
     
     public func skip(count: Int) -> SinqSequence<T> {
         return SinqSequence { () -> GeneratorOf<T> in
