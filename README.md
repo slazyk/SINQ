@@ -184,6 +184,16 @@ selectMany<S: Sequence>(selector: (T, Int) -> S) -> SinqSequence<S.E>
 selectMany<S: Sequence, R>(selector: T -> S, result: S.E -> R) -> SinqSequence<R>
 selectMany<S: Sequence, R>(selector: (T, Int) -> S, result: S.E -> R) -> SinqSequence<R>
 ```
+##### `single` - return the only element in a sequence containing exactly one element
+```swift
+single() -> T
+singleOrNil() -> T?
+singleOrDefault(defaultElement: T) -> T
+single(predicate: T -> Bool) -> T
+singleOrNil(predicate: T -> Bool) -> T?
+singleOrDefault(defaultElement: T, predicate: T -> Bool) -> T
+```
+
 ##### `skip` - create a sequence skipping (given number of elements | while predicate holds )
 ```swift
 skip(count: Int) -> SinqSequence<T>
