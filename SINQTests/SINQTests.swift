@@ -253,9 +253,9 @@ class SINQTests: XCTestCase {
         let seq = sinq([1, 10, 42, 42])
         XCTAssertNil(seq.singleOrNil({$0 == 2}))
         XCTAssertEqual(seq.single({$0 == 10}), 10)
-        XCTAssertEqual(seq.singleOrDefault(44, {$0 == 2}), 44)
+        XCTAssertEqual(seq.singleOrDefault(44, predicate: {$0 == 2}), 44)
         XCTAssertNil(seq.singleOrNil({$0 == 42}))
-        XCTAssertEqual(seq.singleOrDefault(44, {$0 == 42}), 44)
+        XCTAssertEqual(seq.singleOrDefault(44, predicate: {$0 == 42}), 44)
     }
 
     func testSkip() {
