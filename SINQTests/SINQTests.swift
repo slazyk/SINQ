@@ -239,6 +239,24 @@ class SINQTests: XCTestCase {
             }
         }
     }
+    
+    func testSingle() {
+        let empty = sinq(0..<0)
+        let single = sinq([42])
+        let double = sinq([42, 43])
+        XCTAssertNil(empty.singleOrNil())
+        XCTAssertNotNil(single.singleOrNil())
+        XCTAssertNil(double.singleOrNil())
+        XCTAssertEqual(single.single(), 42)
+        XCTAssertEqual(empty.singleOrDefault(44), 44)
+        XCTAssertEqual(double.singleOrDefault(44), 44)
+        let seq = sinq([1, 10, 42, 42])
+        XCTAssertNil(seq.singleOrNil({$0 == 2}))
+        XCTAssertEqual(seq.single({$0 == 10}), 10)
+        XCTAssertEqual(seq.singleOrDefault(44, {$0 == 2}), 44)
+        XCTAssertNil(seq.singleOrNil({$0 == 42}))
+        XCTAssertEqual(seq.singleOrDefault(44, {$0 == 42}), 44)
+    }
 
     func testSkip() {
         let res = sinq(0..<10).skip(2)
