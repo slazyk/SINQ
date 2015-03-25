@@ -624,14 +624,9 @@ public class SinqSequence<T>: SequenceType {
     
     public func singleOrNil() -> T? {
         var gen = self.generate()
-        if let first = gen.next() {
-            if let second = gen.next() {
-                return nil
-            } else {
-                return first
-            }
-        } else {
-            return nil
+        switch (gen.next(), gen.next()) {
+        case (.Some(let e), .None):return e
+        default: return nil
         }
     }
     
