@@ -95,6 +95,10 @@ func count() -> Int
 distinct(equality: (T, T) -> Bool) -> SinqSequence<T>
 distinct<K: Hashable>(key: T -> K) -> SinqSequence<T>
 ```
+##### `each` - iterate over the sequence
+```swift
+each(function: T -> ()) -> ()  
+```
 ##### `elementAt` - get element at given index from the sequence
 ```swift
 elementAtOrNil(index: Int) -> T?  
@@ -213,7 +217,7 @@ thenByDescending<K: Comparable>(key: T -> K) -> SinqOrderedSequence<T>
 ```swift
 toArray() -> T[]
 ```
-##### `toDictionary` - create a dictionary from the sequence
+##### `toDictionary` / `toLookupDictionary` - create a dictionary from the sequence
 ```swift
 toDictionary<K: Hashable, V>(keyValue: T -> (K, V)) -> Dictionary<K, V>
 toDictionary<K: Hashable, V>(key: T -> K, value: T -> V) -> Dictionary<K, V>
