@@ -158,6 +158,12 @@ public class SinqSequence<T>: SequenceType {
 //        return distinct({ $0 == $1 })
 //    }
     
+    public func each(function: T -> ()) {
+        for elem in self {
+            function(elem)
+        }
+    }
+    
     public func elementAtOrNil(index: Int) -> T? {
         if (index < 0) {
             return nil

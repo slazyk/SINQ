@@ -57,6 +57,12 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(repeated.distinct{$0}.count(), 1)
     }
 
+    func testEach() {
+        var cnt = 0
+        sinq(1...3).each{ cnt += $0 }
+        XCTAssertEqual(cnt, 6)
+    }
+    
     func testElementAt() {
         let toNine = sinq(0..<10)
         XCTAssertEqual(toNine.elementAt(2), 2)
