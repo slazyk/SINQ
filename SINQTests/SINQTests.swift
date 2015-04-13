@@ -321,6 +321,19 @@ class SINQTests: XCTestCase {
             XCTAssertEqual(k, 10-v)
         }
     }
+    
+    func testToLookupDictionary() {
+        let res = sinq(0..<9).toLookupDictionary{ $0 % 3 }
+        XCTAssertEqual(res.count, 3)
+        for r in (0..<3) {
+            var ctr = r
+            XCTAssertEqual(res[r]!.count(), 3)
+            for v in res[r]! {
+                XCTAssertEqual(v, ctr)
+                ctr += 3
+            }
+        }
+    }
 
     func testUnion() {
         let seq = sinq([1, 2, 1, 2])

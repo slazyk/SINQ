@@ -766,6 +766,27 @@ public class SinqSequence<T>: SequenceType {
         return dict
     }
 
+    public func toLookupDictionary
+        <K: Hashable, V>
+        (keyValue: T -> (K, V)) -> Dictionary<K, SinqSequence<V>>
+    {
+        return groupBy({ keyValue($0).0 }, element: { keyValue($0).1 }).toDictionary{ ($0.key, $0.values) }
+    }
+
+    public func toLookupDictionary
+        <K: Hashable>
+        (key: T -> K) -> Dictionary<K, SinqSequence<T>>
+    {
+        return groupBy(key).toDictionary{ ($0.key, $0.values) }
+    }
+    
+    public func toLookupDictionary
+        <K: Hashable, V>
+        (key: T -> K, element: T -> V) -> Dictionary<K, SinqSequence<V>>
+    {
+        return groupBy(key, element: element).toDictionary{ ($0.key, $0.values) }
+    }
+    
     //TODO: sequence equal
  
     // O(N*(N+M)) :(
