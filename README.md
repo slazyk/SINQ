@@ -54,9 +54,9 @@ It uses `SinqSequence<T>` wrapper struct in order to do that, **you can wrap any
 
 ## Installation
 
-As of writing, Xcode 6 beta 4 does not support Swift static libraries, and CocoaPods 0.33.1 does not support Frameworks...
+You can use either [CocoaPods](https://cocoapods.org/) or [Carthage](https://github.com/Carthage/Carthage) to install SINQ.
 
-Easiest option to use SINQ in your project is to clone this repo and add SINQ.xcodeproj to your project/workspace and then add SINQ.framework to frameworks for your target.
+Otherwise, the easiest option to use SINQ in your project is to clone this repo and add SINQ.xcodeproj to your project/workspace and then add SINQ.framework to frameworks for your target.
 
 After that you just `import SINQ`.
 

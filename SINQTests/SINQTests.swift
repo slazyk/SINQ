@@ -88,7 +88,7 @@ class SINQTests: XCTestCase {
         
         let longSequence = sinq(1...1000).filter(predicate)
         
-        var gen = longSequence.generate()
+        let gen = longSequence.generate()
         
         for i in 1...5 {
             XCTAssertEqual(gen.next()!, 2*i)
@@ -228,7 +228,7 @@ class SINQTests: XCTestCase {
             return x
         }
         let longSequence = sinq(1...1000).select(identity)
-        var generator = longSequence.generate()
+        let generator = longSequence.generate()
         for i in 1...5 {
             XCTAssertEqual(generator.next()!, i)
             XCTAssertEqual(calledTimes, i)
