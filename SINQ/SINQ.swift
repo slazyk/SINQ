@@ -24,7 +24,7 @@ public class SinqSequence<T>: SequenceType {
     }
     
     public init<S : SequenceType where S.Generator.Element == T>(_ self_: S) {
-        sequence = AnySequence(self_)
+        sequence = AnySequence({ self_.generate() })
     }
     
     public final func aggregate(combine: (T, T) -> T) -> T {
@@ -86,7 +86,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence { () -> AnyGenerator<T> in
             let g1 = self.generate()
             var g2 = other.generate()
-            return anyGenerator {
+            return AnyGenerator {
                 switch g1.next() {
                 case .Some(let e): return e
                 case _: return g2.next()
@@ -127,7 +127,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence { () -> AnyGenerator<T> in
             var uniq = [T]()
             let g = self.generate()
-            return anyGenerator {
+            return AnyGenerator {
                 while let e = g.next() {
                     if !sinq(uniq).contains(e, equality: equality) {
                         uniq.append(e)
@@ -143,7 +143,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence { () -> AnyGenerator<T> in
             var uniq = Dictionary<K, Bool>()
             let g = self.generate()
-            return anyGenerator {
+            return AnyGenerator {
                 while let e = g.next() {
                     if uniq.updateValue(true, forKey: key(e)) == nil {
                         return e
@@ -194,7 +194,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence { () -> AnyGenerator<T> in
             let g = self.distinct(equality).generate()
             let sinqSequence: SinqSequence<T> = sinq(sequence)
-            return anyGenerator {
+            return AnyGenerator {
                 while let e = g.next() {
                     if !sinqSequence.contains(e, equality: equality) {
                         return e
@@ -212,7 +212,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence { () -> AnyGenerator<T> in
             let g = self.generate()
             var uniq = sinq(sequence).toDictionary{(key($0), true)}
-            return anyGenerator {
+            return AnyGenerator {
                 while let e = g.next() {
                     if uniq.updateValue(true, forKey: key(e)) == nil {
                         return e
@@ -292,7 +292,7 @@ public class SinqSequence<T>: SequenceType {
             
             var keysGen = groups.keys.generate()
 
-            return anyGenerator {
+            return AnyGenerator {
                 if let key = keysGen.next() {
                     let values = sinq(groups[key]!).select(element)
                     return Grouping(key: key, values: values)
@@ -336,7 +336,7 @@ public class SinqSequence<T>: SequenceType {
             }
             let gen = self.generate()
             
-            return anyGenerator {
+            return AnyGenerator {
                 if let element = gen.next() {
                     let key = outerKey(element)
                     if let group = innerGrouping[key] {
@@ -372,7 +372,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence { () -> AnyGenerator<T> in
             let g = self.distinct(equality).generate()
             let sinqSequence : SinqSequence<T> = sinq(sequence)
-            return anyGenerator {
+            return AnyGenerator {
                 while let e = g.next() {
                     if sinqSequence.contains(e, equality: equality) {
                         return e
@@ -390,7 +390,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence { () -> AnyGenerator<T> in
             let g = self.generate()
             var uniq = sinq(sequence).toDictionary{(key($0), true)}
-            return anyGenerator {
+            return AnyGenerator {
                 while let e = g.next() {
                     if uniq.removeValueForKey(key(e)) != nil {
                         return e
@@ -425,7 +425,7 @@ public class SinqSequence<T>: SequenceType {
             var innerElem: T? = nil
             var gen2: Array<S.Generator.Element>.Generator = Array<S.Generator.Element>().generate()
 
-            return anyGenerator {
+            return AnyGenerator {
                 while let element = gen2.next() {
                     return result(innerElem!, element)
                 }
@@ -571,9 +571,11 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence<V> { () -> AnyGenerator<V> in
             let g = self.generate()
             var counter = 0
-            return anyGenerator {
+            return AnyGenerator {
                 if let e = g.next() {
-                    return selector(e, counter++)
+                    let ret = selector(e, counter)
+                    counter += 1
+                    return ret
                 }
                 return nil
             }
@@ -596,12 +598,13 @@ public class SinqSequence<T>: SequenceType {
             var gen2: AnySequence<C>.Generator = SinqSequence<C>([C]()).generate()
             var counter = 0
             
-            return anyGenerator {
+            return AnyGenerator {
                 while let element = gen2.next() {
                     return result(element)
                 }
                 while let element = gen1.next() {
-                    let many = sinq(selector(element, counter++))
+                    let many = sinq(selector(element, counter))
+                    counter += 1
                     gen2 = many.generate()
                     if let inner = gen2.next() {
                         return result(inner)
@@ -670,7 +673,7 @@ public class SinqSequence<T>: SequenceType {
             var found = false
             let gen = self.generate()
             
-            return anyGenerator {
+            return AnyGenerator {
                 if found {
                     return gen.next()
                 }
@@ -692,7 +695,7 @@ public class SinqSequence<T>: SequenceType {
             let gen = self.generate()
             var counter = 0
 
-            return anyGenerator {
+            return AnyGenerator {
                 if counter >= count {
                     return nil
                 }
@@ -707,7 +710,7 @@ public class SinqSequence<T>: SequenceType {
             var found = false
             let gen = self.generate()
         
-            return anyGenerator {
+            return AnyGenerator {
                 if found {
                     return nil
                 }
@@ -814,7 +817,7 @@ public class SinqSequence<T>: SequenceType {
         return SinqSequence<R> { () -> AnyGenerator<R> in
             let gen1 = self.generate()
             var gen2 = sequence.generate()
-            return anyGenerator {
+            return AnyGenerator {
                 switch (gen1.next(), gen2.next()) {
                 case (.Some(let e1), .Some(let e2)): return result(e1, e2)
                 case (_, _): return nil
@@ -826,7 +829,7 @@ public class SinqSequence<T>: SequenceType {
     public func whereTrue(predicate: T -> Bool) -> SinqSequence<T> {
         return SinqSequence { () -> AnyGenerator<T> in
             let gen = self.generate()
-            return anyGenerator {
+            return AnyGenerator {
                 while let e = gen.next() {
                     if predicate(e) {
                         return e
@@ -859,7 +862,7 @@ public class SinqOrderedSequence<T> : SinqSequence<T> {
             }
             return false
         }
-        return anyGenerator(array.generate())
+        return AnyGenerator(array.generate())
     }
 
     public init<S: SequenceType where S.Generator.Element == T>(source: S, comparators: Array<(T, T) -> Bool>) {

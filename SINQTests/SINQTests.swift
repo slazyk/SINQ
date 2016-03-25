@@ -27,7 +27,8 @@ class SINQTests: XCTestCase {
         let sequence = sinq([1,2,3]).concat(sinq([4,5,6]))
         var counter = 1
         for elem in sequence {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
     }
 
@@ -184,7 +185,8 @@ class SINQTests: XCTestCase {
         let sorted = sinq(0..<100).orderBy{$0}.filter{$0 < 10}
         var counter = 0
         for elem in sorted {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
         XCTAssertEqual(counter, 10)
     }
@@ -193,7 +195,8 @@ class SINQTests: XCTestCase {
         let sorted = sinq([1,3,4,2,5,6,9,8,7,0]).orderBy{ $0 }
         var counter = 0
         for elem in sorted {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
     }
     
@@ -201,7 +204,8 @@ class SINQTests: XCTestCase {
         let sorted = sinq([1,3,4,2,5,6,9,8,7,0]).orderByDescending{ $0 }
         var counter = 9
         for elem in sorted {
-            XCTAssertEqual(elem, counter--)
+            XCTAssertEqual(elem, counter)
+            counter -= 1
         }
     }
     
@@ -209,15 +213,17 @@ class SINQTests: XCTestCase {
         let sequence = sinq([1,2,3,4,5]).reverse()
         var counter = 5
         for elem in sequence {
-            XCTAssertEqual(elem, counter--)
+            XCTAssertEqual(elem, counter)
+            counter -= 1
         }
     }
 
     func testSelect() {
         var counter = 0
         for (idx, elem) in sinq(10..<20).select({ ($1, 2*$0) }) {
-            XCTAssertEqual(idx, counter++)
+            XCTAssertEqual(idx, counter)
             XCTAssertEqual(elem, 2*(10+idx))
+            counter += 1
         }
     }
     
@@ -269,7 +275,8 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(res.count(), 8)
         var counter = 2
         for elem in res {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
     }
 
@@ -278,7 +285,8 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(res.count(), 5)
         var counter = 5
         for elem in res {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
     }
 
@@ -287,7 +295,8 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(res.count(), 2)
         var counter = 0
         for elem in res {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
     }
 
@@ -296,7 +305,8 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(res.count(), 6)
         var counter = 0
         for elem in res {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
     }
 
@@ -349,11 +359,13 @@ class SINQTests: XCTestCase {
         XCTAssertEqual(res2.count(), 3)
         var counter = 1
         for elem in res1 {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
         counter = 1
         for elem in res2 {
-            XCTAssertEqual(elem, counter++)
+            XCTAssertEqual(elem, counter)
+            counter += 1
         }
     }
     
