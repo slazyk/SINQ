@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C35F8321CA6F8E80073DDE4 /* CHANGELOG.md in Sources */ = {isa = PBXBuildFile; fileRef = 1C35F82F1CA6F8E80073DDE4 /* CHANGELOG.md */; };
+		1C35F8331CA6F8E80073DDE4 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1C35F8301CA6F8E80073DDE4 /* LICENSE */; };
+		1C35F8341CA6F8E80073DDE4 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 1C35F8311CA6F8E80073DDE4 /* README.md */; };
 		6543995C195B773F0001104C /* SINQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543995B195B773F0001104C /* SINQ.swift */; };
 		6543995D195B773F0001104C /* SINQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543995B195B773F0001104C /* SINQ.swift */; };
 		654A37FD195A364B000B80B0 /* SINQ.h in Headers */ = {isa = PBXBuildFile; fileRef = 654A37FC195A364B000B80B0 /* SINQ.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -69,6 +72,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C35F82F1CA6F8E80073DDE4 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		1C35F8301CA6F8E80073DDE4 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		1C35F8311CA6F8E80073DDE4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1CB7874F1AB0FC7500CAEEB3 /* SINQ.podspec.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SINQ.podspec.json; sourceTree = "<group>"; };
 		6543995B195B773F0001104C /* SINQ.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SINQ.swift; sourceTree = "<group>"; };
 		654A37F7195A364B000B80B0 /* SINQ.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SINQ.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +124,9 @@
 		654A37ED195A364B000B80B0 = {
 			isa = PBXGroup;
 			children = (
+				1C35F8301CA6F8E80073DDE4 /* LICENSE */,
+				1C35F82F1CA6F8E80073DDE4 /* CHANGELOG.md */,
+				1C35F8311CA6F8E80073DDE4 /* README.md */,
 				1CB7874F1AB0FC7500CAEEB3 /* SINQ.podspec.json */,
 				654A37F9195A364B000B80B0 /* SINQ */,
 				654A3806195A364C000B80B0 /* SINQ Tests */,
@@ -322,6 +331,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C35F8331CA6F8E80073DDE4 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,7 +363,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C35F8341CA6F8E80073DDE4 /* README.md in Sources */,
 				6543995C195B773F0001104C /* SINQ.swift in Sources */,
+				1C35F8321CA6F8E80073DDE4 /* CHANGELOG.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
