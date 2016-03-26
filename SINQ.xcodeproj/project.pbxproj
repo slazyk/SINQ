@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C35F8321CA6F8E80073DDE4 /* CHANGELOG.md in Sources */ = {isa = PBXBuildFile; fileRef = 1C35F82F1CA6F8E80073DDE4 /* CHANGELOG.md */; };
-		1C35F8331CA6F8E80073DDE4 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1C35F8301CA6F8E80073DDE4 /* LICENSE */; };
-		1C35F8341CA6F8E80073DDE4 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 1C35F8311CA6F8E80073DDE4 /* README.md */; };
 		6543995C195B773F0001104C /* SINQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543995B195B773F0001104C /* SINQ.swift */; };
 		6543995D195B773F0001104C /* SINQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543995B195B773F0001104C /* SINQ.swift */; };
 		654A37FD195A364B000B80B0 /* SINQ.h in Headers */ = {isa = PBXBuildFile; fileRef = 654A37FC195A364B000B80B0 /* SINQ.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -331,7 +328,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C35F8331CA6F8E80073DDE4 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,9 +359,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C35F8341CA6F8E80073DDE4 /* README.md in Sources */,
 				6543995C195B773F0001104C /* SINQ.swift in Sources */,
-				1C35F8321CA6F8E80073DDE4 /* CHANGELOG.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
