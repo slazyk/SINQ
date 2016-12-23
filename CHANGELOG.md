@@ -1,5 +1,10 @@
 ## Changelog
 
+#### 0.7.0 - 2016/12/23
+** Swift update release, including:**
+
+- Swift 3.0.2 support (nverinaud)
+
 #### 0.6.0 - 2016/03/26
 ** Swift update release, including:**
 
