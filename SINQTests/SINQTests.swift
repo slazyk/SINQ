@@ -53,7 +53,7 @@ class SINQTests: XCTestCase {
         let toNine = sinq(0..<10)
         XCTAssertEqual(toNine.distinct{$0 == $1}.count(), 10)
         XCTAssertEqual(toNine.distinct{$0}.count(), 10)
-        let repeated = sinq(Repeat(count: 10, repeatedValue: 1))
+        let repeated = sinq(repeatElement(1, count: 10))
         XCTAssertEqual(repeated.distinct{$0 == $1}.count(), 1)
         XCTAssertEqual(repeated.distinct{$0}.count(), 1)
     }
@@ -82,14 +82,14 @@ class SINQTests: XCTestCase {
 
     func testFilterIsLazy() {
         var timesCalled = 0
-        let predicate: Int -> Bool = { x in
+        let predicate: (Int) -> Bool = { x in
             timesCalled += 1
             return x % 2 == 0
         }
         
         let longSequence = sinq(1...1000).filter(predicate)
         
-        let gen = longSequence.generate()
+        let gen = longSequence.makeIterator()
         
         for i in 1...5 {
             XCTAssertEqual(gen.next()!, 2*i)
@@ -229,12 +229,12 @@ class SINQTests: XCTestCase {
     
     func testSelectIsLazy() {
         var calledTimes = 0
-        let identity: Int -> Int = { x in
+        let identity: (Int) -> Int = { x in
             calledTimes += 1
             return x
         }
         let longSequence = sinq(1...1000).select(identity)
-        let generator = longSequence.generate()
+        let generator = longSequence.makeIterator()
         for i in 1...5 {
             XCTAssertEqual(generator.next()!, i)
             XCTAssertEqual(calledTimes, i)
@@ -244,7 +244,7 @@ class SINQTests: XCTestCase {
     func testSelectMany() {
         let results = sinq(0..<10).selectMany({ 0..<$0 }).toArray()
         XCTAssertEqual(results.count, 45)
-        var gen = results.generate()
+        var gen = results.makeIterator()
         for i in 0..<10 {
             for j in 0..<i {
                 XCTAssertEqual(gen.next()!, j)
