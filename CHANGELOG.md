@@ -1,5 +1,10 @@
 ## Changelog
 
+#### 0.8.0 - 2018/05/03
+** Swift update release, including:**
+
+- Swift 4.1 support (aaronsky)
+
 #### 0.7.0 - 2016/12/23
 ** Swift update release, including:**
 
