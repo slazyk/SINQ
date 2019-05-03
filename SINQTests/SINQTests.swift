@@ -122,7 +122,7 @@ class SINQTests: XCTestCase {
         let counts = seq.groupJoin(inner: [1, 2, 3, 4, 5],
                 outerKey: { $0 },
                 innerKey: { $0 % 2 },
-                result: { $0 })
+                result: { ($0, $1) })
             .select{ ($0, $1.count()) }
         let dict = counts.toDictionary({ ($0, $1) })
         XCTAssertEqual(dict[0]!, 2)

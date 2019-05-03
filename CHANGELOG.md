@@ -1,5 +1,10 @@
 ## Changelog
 
+#### 0.9.0 - 2019/05/03
+** Swift update release, including:**
+
+- Swift 5.0.0 support (tibo9)
+
 #### 0.7.0 - 2016/12/23
 ** Swift update release, including:**
 
